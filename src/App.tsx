@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useAppStore } from './store/useAppStore'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
@@ -41,6 +42,15 @@ export default function App() {
   const importData = useAppStore(s => s.importData)
   const resetData = useAppStore(s => s.resetData)
 
+  // Sync dark mode to <html> so CSS variable lookups on body and descendants resolve correctly
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [dark])
+
   const handleExport = () => {
     const json = exportData()
     const blob = new Blob([json], { type: 'application/json' })
@@ -63,7 +73,7 @@ export default function App() {
   const currentModule = modules[activeModule] || modules.dashboard
 
   return (
-    <div className={dark ? 'dark' : ''} style={{ height: '100%' }}>
+    <div style={{ height: '100%' }}>
       <div className="app-layout">
         <Sidebar />
         <div className="main-area">
