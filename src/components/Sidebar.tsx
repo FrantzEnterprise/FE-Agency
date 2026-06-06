@@ -2,7 +2,8 @@ import { useAppStore } from '../store/useAppStore'
 import {
   LayoutDashboard, Users, Target, Briefcase, BarChart3, TrendingUp,
   DollarSign, PieChart, FileText, UserCheck, BookOpen, MessageSquare,
-  Megaphone, Search, Mail, Camera, Palette, GitBranch, Building2
+  Megaphone, Search, Mail, Camera, Palette, GitBranch, Building2,
+  Receipt, ScrollText, HeartPulse, FileBarChart
 } from 'lucide-react'
 
 interface NavItem {
@@ -21,6 +22,11 @@ const navItems: NavItem[] = [
   { id: 'tasks', label: 'Tasks', icon: <Briefcase size={18} /> },
   { id: 'revenue', label: 'Revenue', icon: <DollarSign size={18} /> },
   { id: 'kpi', label: 'KPIs', icon: <BarChart3 size={18} /> },
+  { id: '', label: 'RETAINER TOOLS', icon: null },
+  { id: 'pricing', label: 'Pricing & Proposals', icon: <Receipt size={18} /> },
+  { id: 'sow', label: 'SOW Builder', icon: <ScrollText size={18} /> },
+  { id: 'health', label: 'Account Health', icon: <HeartPulse size={18} /> },
+  { id: 'reporting', label: 'Client Reports', icon: <FileBarChart size={18} /> },
   { id: '', label: 'AGENCY', icon: null },
   { id: 'agents', label: 'Roster', icon: <UserCheck size={18} /> },
   { id: 'skills', label: 'Skills', icon: <BookOpen size={18} /> },

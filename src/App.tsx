@@ -12,6 +12,10 @@ import RosterPage from './components/RosterPage'
 import SkillsPage from './components/SkillsPage'
 import OrgChartPage from './components/OrgChartPage'
 import ServicePage from './components/ServicePage'
+import PricingPage from './components/PricingPage'
+import SowBuilder from './components/SowBuilder'
+import AccountHealthPage from './components/AccountHealthPage'
+import ClientReportingPage from './components/ClientReportingPage'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -32,6 +36,10 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   social: { title: 'Social Media', component: <ServicePage service="social" /> },
   brand: { title: 'Brand & Voice', component: <ServicePage service="brand" /> },
   content: { title: 'Content Studio', component: <ServicePage service="content" /> },
+  pricing: { title: 'Pricing & Proposals', component: <PricingPage /> },
+  sow: { title: 'SOW Builder', component: <SowBuilder /> },
+  health: { title: 'Account Health', component: <AccountHealthPage /> },
+  reporting: { title: 'Client Reports', component: <ClientReportingPage /> },
 }
 
 export default function App() {
