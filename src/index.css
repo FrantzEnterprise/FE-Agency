@@ -139,14 +139,37 @@ body {
   padding: 12px 10px;
 }
 
-.sidebar-section-label {
-  font-size: 10px;
-  font-weight: 600;
+.sidebar-category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 16px 12px 6px;
   color: var(--sidebar-text);
-  opacity: 0.5;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+  text-align: left;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.sidebar-category:hover {
+  color: #e2e8f0;
+}
+
+.sidebar-category.has-active {
+  color: var(--sidebar-active);
+}
+
+.sidebar-subnav {
+  padding-left: 4px;
+  animation: slideIn 0.15s ease-out;
 }
 
 .sidebar-link {
