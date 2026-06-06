@@ -20,6 +20,13 @@ import OnboardingPage from './components/OnboardingPage'
 import BrandVoicePage from './components/BrandVoicePage'
 import ChurnPreventionPage from './components/ChurnPreventionPage'
 import QbrPage from './components/QbrPage'
+import CreativeStudioPage from './components/CreativeStudioPage'
+import QaPipelinePage from './components/QaPipelinePage'
+import PaidMediaPage from './components/PaidMediaPage'
+import SeoPage from './components/SeoPage'
+import EmailPage from './components/EmailPage'
+import SocialPage from './components/SocialPage'
+import ContentStudioPage from './components/ContentStudioPage'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -33,13 +40,13 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   agents: { title: 'Roster', component: <RosterPage /> },
   skills: { title: 'Skills', component: <SkillsPage /> },
   'org-chart': { title: 'Org Structure', component: <OrgChartPage /> },
-  creative: { title: 'Creative Studio', component: <ServicePage service="creative" /> },
-  'paid-media': { title: 'Paid Media', component: <ServicePage service="paid-media" /> },
-  seo: { title: 'SEO', component: <ServicePage service="seo" /> },
-  email: { title: 'Email & Lifecycle', component: <ServicePage service="email" /> },
-  social: { title: 'Social Media', component: <ServicePage service="social" /> },
-  brand: { title: 'Brand & Voice', component: <ServicePage service="brand" /> },
-  content: { title: 'Content Studio', component: <ServicePage service="content" /> },
+  creative: { title: 'Creative Studio', component: <CreativeStudioPage /> },
+  'qa-pipeline': { title: 'QA Pipeline', component: <QaPipelinePage /> },
+  'paid-media': { title: 'Paid Media', component: <PaidMediaPage /> },
+  seo: { title: 'SEO', component: <SeoPage /> },
+  email: { title: 'Email & Lifecycle', component: <EmailPage /> },
+  social: { title: 'Social Media', component: <SocialPage /> },
+  content: { title: 'Content Studio', component: <ContentStudioPage /> },
   pricing: { title: 'Pricing & Proposals', component: <PricingPage /> },
   sow: { title: 'SOW Builder', component: <SowBuilder /> },
   health: { title: 'Account Health', component: <AccountHealthPage /> },

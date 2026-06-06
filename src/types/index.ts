@@ -103,6 +103,98 @@ export interface WeeklyNote {
   author: string
 }
 
+export interface CreativeAsset {
+  id: string
+  clientId: string
+  type: 'social' | 'display' | 'video' | 'email' | 'print' | 'web' | 'other'
+  name: string
+  description: string
+  status: 'brief' | 'in_progress' | 'qa' | 'client_review' | 'approved' | 'revisions' | 'delivered'
+  assignee: string
+  dueDate: string
+  createdAt: string
+  version: number
+}
+
+export interface QcChecklist {
+  id: string
+  assetType: 'design' | 'copy' | 'video' | 'email' | 'social' | 'general'
+  items: { name: string; passed: boolean; notes: string }[]
+  passed: boolean
+  reviewedBy: string
+  reviewedAt: string
+}
+
+export interface Campaign {
+  id: string
+  clientId: string
+  name: string
+  platform: 'meta' | 'google' | 'linkedin' | 'email' | 'organic'
+  status: 'draft' | 'active' | 'paused' | 'completed'
+  budget: number
+  spent: number
+  impressions: number
+  clicks: number
+  conversions: number
+  startDate: string
+  endDate: string
+  notes: string
+}
+
+export interface SeoKeyword {
+  id: string
+  clientId: string
+  keyword: string
+  volume: number
+  difficulty: number
+  position: number
+  previousPosition: number
+  url: string
+  lastChecked: string
+}
+
+export interface EmailCampaign {
+  id: string
+  clientId: string
+  name: string
+  type: 'newsletter' | 'drip' | 'promo' | 'reengagement' | 'lifecycle'
+  status: 'draft' | 'active' | 'paused' | 'completed'
+  recipients: number
+  sent: number
+  opens: number
+  clicks: number
+  bounces: number
+  createdAt: string
+  scheduledFor: string
+}
+
+export interface SocialPost {
+  id: string
+  clientId: string
+  platform: 'linkedin' | 'instagram' | 'twitter' | 'facebook' | 'tiktok'
+  content: string
+  mediaUrl: string
+  status: 'draft' | 'scheduled' | 'posted' | 'failed'
+  scheduledFor: string
+  postedAt: string
+  likes: number
+  comments: number
+  shares: number
+  impressions: number
+}
+
+export interface ContentPiece {
+  id: string
+  clientId: string
+  type: 'blog' | 'video' | 'infographic' | 'whitepaper' | 'case_study' | 'social_asset'
+  title: string
+  status: 'brief' | 'script' | 'production' | 'editing' | 'review' | 'published'
+  assignee: string
+  dueDate: string
+  publishedAt: string
+  url: string
+}
+
 // ─── Agent Configuration from blueprint ───────────────────────────────
 
 export const AGENT_DEFINITIONS: Omit<Agent, 'id' | 'status' | 'utilization' | 'lastActive'>[] = [

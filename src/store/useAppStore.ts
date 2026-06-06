@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote } from '../types'
+import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece } from '../types'
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
@@ -24,6 +24,12 @@ export interface AppState {
   pipeline: PipelineDeal[]
   kpis: KPIEntry[]
   weeklyNotes: WeeklyNote[]
+  creativeAssets: CreativeAsset[]
+  campaigns: Campaign[]
+  seoKeywords: SeoKeyword[]
+  emailCampaigns: EmailCampaign[]
+  socialPosts: SocialPost[]
+  contentPieces: ContentPiece[]
   loading: boolean
 
   toggleDark: () => void
@@ -49,6 +55,18 @@ export interface AppState {
 
   addWeeklyNote: (n: Omit<WeeklyNote, 'id'>) => void
   updateKPI: (metric: string, data: Partial<KPIEntry>) => void
+  addCreativeAsset: (a: Omit<CreativeAsset, 'id' | 'createdAt' | 'version'>) => void
+  updateCreativeAsset: (id: string, data: Partial<CreativeAsset>) => void
+  addCampaign: (c: Omit<Campaign, 'id'>) => void
+  updateCampaign: (id: string, data: Partial<Campaign>) => void
+  addSeoKeyword: (k: Omit<SeoKeyword, 'id'>) => void
+  updateSeoKeyword: (id: string, data: Partial<SeoKeyword>) => void
+  addEmailCampaign: (e: Omit<EmailCampaign, 'id'>) => void
+  updateEmailCampaign: (id: string, data: Partial<EmailCampaign>) => void
+  addSocialPost: (p: Omit<SocialPost, 'id' | 'postedAt' | 'likes' | 'comments' | 'shares' | 'impressions'>) => void
+  updateSocialPost: (id: string, data: Partial<SocialPost>) => void
+  addContentPiece: (c: Omit<ContentPiece, 'id'>) => void
+  updateContentPiece: (id: string, data: Partial<ContentPiece>) => void
 
   exportData: () => string
   importData: (json: string) => void
@@ -105,6 +123,53 @@ const sampleClientTasks: ClientTask[] = [
   { id: uid(), clientId: sampleClients[2].id, name: 'Analytics baseline setup', dueDate: daysFromNow(7), status: 'pending', assignee: 'analyst', phase: 'plan' },
 ]
 
+const sampleAssets: CreativeAsset[] = [
+  { id: uid(), clientId: sampleClients[0].id, type: 'social', name: 'BrightPath Q3 Post Series', description: '6 social graphics', status: 'client_review', assignee: 'brand-designer', dueDate: daysFromNow(2), createdAt: daysAgo(10), version: 3 },
+  { id: uid(), clientId: sampleClients[0].id, type: 'video', name: 'BrightPath Testimonial', description: '60s patient video', status: 'editing', assignee: 'video-editor', dueDate: daysFromNow(10), createdAt: daysAgo(5), version: 1 },
+  { id: uid(), clientId: sampleClients[1].id, type: 'email', name: 'Summit Spring Promo', description: 'Roof inspection email', status: 'qa', assignee: 'copywriter', dueDate: daysFromNow(4), createdAt: daysAgo(7), version: 2 },
+  { id: uid(), clientId: sampleClients[1].id, type: 'social', name: 'Summit Social Q3', description: 'Weekly social posts', status: 'brief', assignee: 'creative-director', dueDate: daysFromNow(14), createdAt: daysAgo(1), version: 1 },
+  { id: uid(), clientId: sampleClients[3].id, type: 'display', name: 'Coastal Luxury Banners', description: '3 display sizes', status: 'revisions', assignee: 'brand-designer', dueDate: daysAgo(3), createdAt: daysAgo(14), version: 4 },
+  { id: uid(), clientId: sampleClients[4].id, type: 'social', name: 'Precision Auto Social', description: 'Monthly social calendar', status: 'approved', assignee: 'brand-designer', dueDate: daysAgo(5), createdAt: daysAgo(21), version: 2 },
+]
+
+const sampleCampaigns: Campaign[] = [
+  { id: uid(), clientId: sampleClients[0].id, name: 'BrightPath Q3 Awareness', platform: 'meta', status: 'active', budget: 5000, spent: 3200, impressions: 145000, clicks: 4200, conversions: 185, startDate: daysAgo(30), endDate: daysFromNow(60), notes: 'Local zip targeting, ages 35-55' },
+  { id: uid(), clientId: sampleClients[1].id, name: 'Summit Roofing Search', platform: 'google', status: 'active', budget: 3000, spent: 2100, impressions: 82000, clicks: 1900, conversions: 45, startDate: daysAgo(45), endDate: daysFromNow(45), notes: 'Seasonal roofing keywords' },
+  { id: uid(), clientId: sampleClients[2].id, name: 'Verdant Lawn Care LinkedIn', platform: 'linkedin', status: 'draft', budget: 2000, spent: 0, impressions: 0, clicks: 0, conversions: 0, startDate: daysFromNow(7), endDate: daysFromNow(90), notes: 'B2B targeting commercial properties' },
+  { id: uid(), clientId: sampleClients[3].id, name: 'Coastal Realty Retargeting', platform: 'meta', status: 'paused', budget: 4000, spent: 2800, impressions: 98000, clicks: 2100, conversions: 32, startDate: daysAgo(60), endDate: daysFromNow(30), notes: 'Retargeting leads from open houses' },
+]
+
+const sampleSeoKeywords: SeoKeyword[] = [
+  { id: uid(), clientId: sampleClients[0].id, keyword: 'dentist near me', volume: 14500, difficulty: 72, position: 8, previousPosition: 11, url: '/locations', lastChecked: daysAgo(1) },
+  { id: uid(), clientId: sampleClients[0].id, keyword: 'cosmetic dentistry', volume: 8200, difficulty: 68, position: 12, previousPosition: 14, url: '/cosmetic', lastChecked: daysAgo(1) },
+  { id: uid(), clientId: sampleClients[1].id, keyword: 'roof repair cost', volume: 6200, difficulty: 55, position: 5, previousPosition: 6, url: '/roof-repair', lastChecked: daysAgo(2) },
+  { id: uid(), clientId: sampleClients[1].id, keyword: 'roof replacement', volume: 9800, difficulty: 62, position: 9, previousPosition: 9, url: '/replacement', lastChecked: daysAgo(2) },
+]
+
+const sampleEmailCampaigns: EmailCampaign[] = [
+  { id: uid(), clientId: sampleClients[0].id, name: 'Monthly Newsletter June', type: 'newsletter', status: 'completed', recipients: 3400, sent: 3350, opens: 1250, clicks: 410, bounces: 50, createdAt: daysAgo(14), scheduledFor: daysAgo(10) },
+  { id: uid(), clientId: sampleClients[0].id, name: 'New Patient Welcome Drip', type: 'lifecycle', status: 'active', recipients: 120, sent: 85, opens: 68, clicks: 42, bounces: 2, createdAt: daysAgo(7), scheduledFor: '' },
+  { id: uid(), clientId: sampleClients[3].id, name: 'Luxury Listing Alert', type: 'promo', status: 'draft', recipients: 0, sent: 0, opens: 0, clicks: 0, bounces: 0, createdAt: daysAgo(1), scheduledFor: daysFromNow(5) },
+  { id: uid(), clientId: sampleClients[4].id, name: 'Service Reminder Sequence', type: 'lifecycle', status: 'active', recipients: 450, sent: 380, opens: 210, clicks: 130, bounces: 8, createdAt: daysAgo(30), scheduledFor: '' },
+]
+
+const sampleSocialPosts: SocialPost[] = [
+  { id: uid(), clientId: sampleClients[0].id, platform: 'facebook', content: 'Did you know? Regular dental check-ups can prevent serious health issues. Book your appointment today!', mediaUrl: '', status: 'posted', scheduledFor: daysAgo(3), postedAt: daysAgo(3), likes: 42, comments: 8, shares: 12, impressions: 3400 },
+  { id: uid(), clientId: sampleClients[0].id, platform: 'instagram', content: 'Summer smile special! ✨ 20% off whitening for new patients. Link in bio.', mediaUrl: '', status: 'scheduled', scheduledFor: daysFromNow(1), postedAt: '', likes: 0, comments: 0, shares: 0, impressions: 0 },
+  { id: uid(), clientId: sampleClients[1].id, platform: 'linkedin', content: 'Protect your investment. Annual roof inspections catch small issues before they become expensive repairs.', mediaUrl: '', status: 'posted', scheduledFor: daysAgo(5), postedAt: daysAgo(5), likes: 28, comments: 5, shares: 9, impressions: 2100 },
+  { id: uid(), clientId: sampleClients[1].id, platform: 'facebook', content: 'Spring is here! Get your roof inspection before the summer storms roll in. Free estimates.', mediaUrl: '', status: 'scheduled', scheduledFor: daysFromNow(3), postedAt: '', likes: 0, comments: 0, shares: 0, impressions: 0 },
+  { id: uid(), clientId: sampleClients[4].id, platform: 'facebook', content: 'Tire rotation special this month! Keep your vehicle running smoothly with Precision Auto.', mediaUrl: '', status: 'posted', scheduledFor: daysAgo(1), postedAt: daysAgo(1), likes: 15, comments: 3, shares: 5, impressions: 1200 },
+]
+
+const sampleContentPieces: ContentPiece[] = [
+  { id: uid(), clientId: sampleClients[0].id, type: 'blog', title: '10 Signs You Need a Dental Check-Up', status: 'published', assignee: 'copywriter', dueDate: daysAgo(7), publishedAt: daysAgo(5), url: '/blog/dental-checkup-signs' },
+  { id: uid(), clientId: sampleClients[0].id, type: 'video', title: 'Dental Implant Procedure Walkthrough', status: 'editing', assignee: 'video-editor', dueDate: daysFromNow(7), publishedAt: '', url: '' },
+  { id: uid(), clientId: sampleClients[1].id, type: 'blog', title: 'How to Choose a Roofing Contractor', status: 'published', assignee: 'copywriter', dueDate: daysAgo(14), publishedAt: daysAgo(12), url: '/blog/choose-roofing-contractor' },
+  { id: uid(), clientId: sampleClients[1].id, type: 'infographic', title: 'Roof Materials Comparison Guide', status: 'production', assignee: 'brand-designer', dueDate: daysFromNow(14), publishedAt: '', url: '' },
+  { id: uid(), clientId: sampleClients[4].id, type: 'case_study', title: 'Fleet Maintenance Cost Reduction Case Study', status: 'brief', assignee: 'strategist', dueDate: daysFromNow(21), publishedAt: '', url: '' },
+  { id: uid(), clientId: sampleClients[3].id, type: 'social_asset', title: 'Luxury Home Buyer Guide Carousel', status: 'production', assignee: 'brand-designer', dueDate: daysFromNow(5), publishedAt: '', url: '' },
+]
+
 // ─── Build from blueprint ──────────────────────────────────────────────
 
 const buildAgents = (): Agent[] =>
@@ -155,6 +220,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   revenueHistory: sampleRevenue,
   pipeline: samplePipeline,
   kpis: sampleKPIs,
+  creativeAssets: sampleAssets,
+  campaigns: sampleCampaigns,
+  seoKeywords: sampleSeoKeywords,
+  emailCampaigns: sampleEmailCampaigns,
+  socialPosts: sampleSocialPosts,
+  contentPieces: sampleContentPieces,
   weeklyNotes: [],
   loading: false,
 
@@ -181,6 +252,19 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addWeeklyNote: (n) => set(s => ({ weeklyNotes: [...s.weeklyNotes, { id: uid(), ...n }] })),
   updateKPI: (metric, data) => set(s => ({ kpis: s.kpis.map(k => k.metric === metric ? { ...k, ...data } : k) })),
+
+  addCreativeAsset: (a) => set(s => ({ creativeAssets: [...s.creativeAssets, { id: uid(), createdAt: new Date().toISOString(), version: 1, ...a }] })),
+  updateCreativeAsset: (id, data) => set(s => ({ creativeAssets: s.creativeAssets.map(a => a.id === id ? { ...a, ...data } : a) })),
+  addCampaign: (c) => set(s => ({ campaigns: [...s.campaigns, { id: uid(), ...c }] })),
+  updateCampaign: (id, data) => set(s => ({ campaigns: s.campaigns.map(c => c.id === id ? { ...c, ...data } : c) })),
+  addSeoKeyword: (k) => set(s => ({ seoKeywords: [...s.seoKeywords, { id: uid(), ...k }] })),
+  updateSeoKeyword: (id, data) => set(s => ({ seoKeywords: s.seoKeywords.map(k => k.id === id ? { ...k, ...data } : k) })),
+  addEmailCampaign: (e) => set(s => ({ emailCampaigns: [...s.emailCampaigns, { id: uid(), ...e }] })),
+  updateEmailCampaign: (id, data) => set(s => ({ emailCampaigns: s.emailCampaigns.map(e => e.id === id ? { ...e, ...data } : e) })),
+  addSocialPost: (p) => set(s => ({ socialPosts: [...s.socialPosts, { id: uid(), postedAt: '', likes: 0, comments: 0, shares: 0, impressions: 0, ...p }] })),
+  updateSocialPost: (id, data) => set(s => ({ socialPosts: s.socialPosts.map(p => p.id === id ? { ...p, ...data } : p) })),
+  addContentPiece: (c) => set(s => ({ contentPieces: [...s.contentPieces, { id: uid(), ...c }] })),
+  updateContentPiece: (id, data) => set(s => ({ contentPieces: s.contentPieces.map(c => c.id === id ? { ...c, ...data } : c) })),
 
   exportData: () => {
     const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes } = get()

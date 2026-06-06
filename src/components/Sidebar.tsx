@@ -3,9 +3,9 @@ import { useAppStore } from '../store/useAppStore'
 import {
   LayoutDashboard, Users, Target, Briefcase, BarChart3, TrendingUp,
   DollarSign, PieChart, FileText, UserCheck, BookOpen, MessageSquare,
-  Megaphone, Search, Mail, Camera, Palette, GitBranch, Building2,
+  Megaphone, Search, Mail, Camera, Palette, GitBranch,
   Receipt, ScrollText, HeartPulse, FileBarChart,
-  Rocket, Speech, Shield, CalendarCheck,
+  Rocket, Speech, Shield, CalendarCheck, CheckCircle,
   ChevronDown, ChevronRight
 } from 'lucide-react'
 
@@ -68,11 +68,11 @@ const categories: Category[] = [
     label: 'SERVICES',
     items: [
       { id: 'creative', label: 'Creative Studio', icon: <Palette size={18} /> },
+      { id: 'qa-pipeline', label: 'QA Pipeline', icon: <CheckCircle size={18} /> },
       { id: 'paid-media', label: 'Paid Media', icon: <Megaphone size={18} /> },
       { id: 'seo', label: 'SEO', icon: <Search size={18} /> },
       { id: 'email', label: 'Email/Lifecycle', icon: <Mail size={18} /> },
       { id: 'social', label: 'Social Media', icon: <MessageSquare size={18} /> },
-      { id: 'brand', label: 'Brand & Voice', icon: <FileText size={18} /> },
       { id: 'content', label: 'Content Studio', icon: <Camera size={18} /> },
     ],
   },
