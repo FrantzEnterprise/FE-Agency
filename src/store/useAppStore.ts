@@ -227,6 +227,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   socialPosts: sampleSocialPosts,
   contentPieces: sampleContentPieces,
   weeklyNotes: [],
+    creativeAssets: sampleAssets,
+    campaigns: sampleCampaigns,
+    seoKeywords: sampleSeoKeywords,
+    emailCampaigns: sampleEmailCampaigns,
+    socialPosts: sampleSocialPosts,
+    contentPieces: sampleContentPieces,
   loading: false,
 
   toggleDark: () => set(s => ({ dark: !s.dark })),
@@ -267,8 +273,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateContentPiece: (id, data) => set(s => ({ contentPieces: s.contentPieces.map(c => c.id === id ? { ...c, ...data } : c) })),
 
   exportData: () => {
-    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes } = get()
-    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, exportedAt: new Date().toISOString() }, null, 2)
+    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces } = get()
+    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, exportedAt: new Date().toISOString() }, null, 2)
   },
 
   importData: (json) => {
@@ -285,6 +291,12 @@ export const useAppStore = create<AppState>((set, get) => ({
         pipeline: data.pipeline || [],
         kpis: data.kpis || [],
         weeklyNotes: data.weeklyNotes || [],
+        creativeAssets: data.creativeAssets || [],
+        campaigns: data.campaigns || [],
+        seoKeywords: data.seoKeywords || [],
+        emailCampaigns: data.emailCampaigns || [],
+        socialPosts: data.socialPosts || [],
+        contentPieces: data.contentPieces || [],
       })
     } catch { alert('Invalid import data') }
   },
@@ -300,5 +312,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     pipeline: samplePipeline,
     kpis: sampleKPIs,
     weeklyNotes: [],
+    creativeAssets: sampleAssets,
+    campaigns: sampleCampaigns,
+    seoKeywords: sampleSeoKeywords,
+    emailCampaigns: sampleEmailCampaigns,
+    socialPosts: sampleSocialPosts,
+    contentPieces: sampleContentPieces,
   }),
 }))
