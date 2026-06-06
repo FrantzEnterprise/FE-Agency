@@ -50,7 +50,7 @@ const DEFAULT_METRICS: Record<string, number> = {
 }
 
 export default function AccountHealthPage() {
-  const { clients, updateClientHealth } = useAppStore()
+  const { clients, updateClient } = useAppStore()
   const [editing, setEditing] = useState<string | null>(null)
   const [metrics, setMetrics] = useState<Record<string, Record<string, number>>>({})
 
@@ -59,7 +59,7 @@ export default function AccountHealthPage() {
   const handleScore = (clientId: string) => {
     const m = getMetrics(clientId)
     const result = calculateHealth(m)
-    updateClientHealth(clientId, result.health)
+    updateClient(clientId, { health: result.health })
     setEditing(null)
   }
 

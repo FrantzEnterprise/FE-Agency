@@ -16,6 +16,10 @@ import PricingPage from './components/PricingPage'
 import SowBuilder from './components/SowBuilder'
 import AccountHealthPage from './components/AccountHealthPage'
 import ClientReportingPage from './components/ClientReportingPage'
+import OnboardingPage from './components/OnboardingPage'
+import BrandVoicePage from './components/BrandVoicePage'
+import ChurnPreventionPage from './components/ChurnPreventionPage'
+import QbrPage from './components/QbrPage'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -40,6 +44,10 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   sow: { title: 'SOW Builder', component: <SowBuilder /> },
   health: { title: 'Account Health', component: <AccountHealthPage /> },
   reporting: { title: 'Client Reports', component: <ClientReportingPage /> },
+  onboarding: { title: 'Onboarding', component: <OnboardingPage /> },
+  'brand-voice': { title: 'Brand Voice', component: <BrandVoicePage /> },
+  'churn-prevention': { title: 'Churn Prevention', component: <ChurnPreventionPage /> },
+  qbr: { title: 'QBR Templates', component: <QbrPage /> },
 }
 
 export default function App() {

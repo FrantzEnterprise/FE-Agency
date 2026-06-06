@@ -3,7 +3,8 @@ import {
   LayoutDashboard, Users, Target, Briefcase, BarChart3, TrendingUp,
   DollarSign, PieChart, FileText, UserCheck, BookOpen, MessageSquare,
   Megaphone, Search, Mail, Camera, Palette, GitBranch, Building2,
-  Receipt, ScrollText, HeartPulse, FileBarChart
+  Receipt, ScrollText, HeartPulse, FileBarChart,
+  Rocket, Speech, Shield, CalendarCheck
 } from 'lucide-react'
 
 interface NavItem {
@@ -27,6 +28,11 @@ const navItems: NavItem[] = [
   { id: 'sow', label: 'SOW Builder', icon: <ScrollText size={18} /> },
   { id: 'health', label: 'Account Health', icon: <HeartPulse size={18} /> },
   { id: 'reporting', label: 'Client Reports', icon: <FileBarChart size={18} /> },
+  { id: '', label: 'CLIENT LIFECYCLE', icon: null },
+  { id: 'onboarding', label: 'Onboarding', icon: <Rocket size={18} /> },
+  { id: 'brand-voice', label: 'Brand Voice', icon: <Speech size={18} /> },
+  { id: 'churn-prevention', label: 'Churn Prevention', icon: <Shield size={18} /> },
+  { id: 'qbr', label: 'QBR Templates', icon: <CalendarCheck size={18} /> },
   { id: '', label: 'AGENCY', icon: null },
   { id: 'agents', label: 'Roster', icon: <UserCheck size={18} /> },
   { id: 'skills', label: 'Skills', icon: <BookOpen size={18} /> },
