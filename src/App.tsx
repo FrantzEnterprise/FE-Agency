@@ -27,6 +27,10 @@ import SeoPage from './components/SeoPage'
 import EmailPage from './components/EmailPage'
 import SocialPage from './components/SocialPage'
 import ContentStudioPage from './components/ContentStudioPage'
+import PitchEnginePage from './components/PitchEnginePage'
+import DiscoveryCallPage from './components/DiscoveryCallPage'
+import MarketResearcherPage from './components/MarketResearcherPage'
+import ScopeCreepPage from './components/ScopeCreepPage'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -55,6 +59,10 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   'brand-voice': { title: 'Brand Voice', component: <BrandVoicePage /> },
   'churn-prevention': { title: 'Churn Prevention', component: <ChurnPreventionPage /> },
   qbr: { title: 'QBR Templates', component: <QbrPage /> },
+  'pitch-engine': { title: 'Retainer Pitch Engine', component: <PitchEnginePage /> },
+  'discovery-call': { title: 'Discovery Call Orchestrator', component: <DiscoveryCallPage /> },
+  'market-research': { title: 'Market Researcher', component: <MarketResearcherPage /> },
+  'scope-creep': { title: 'Scope Creep Recovery', component: <ScopeCreepPage /> },
 }
 
 export default function App() {

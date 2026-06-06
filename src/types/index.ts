@@ -195,6 +195,58 @@ export interface ContentPiece {
   url: string
 }
 
+export interface PitchDeal {
+  id: string
+  company: string
+  contact: string
+  contactRole: string
+  targetTier: 'Foundation' | 'Growth' | 'Scale'
+  estimatedMRR: number
+  stage: 'research' | 'contacted' | 'discovery_scheduled' | 'discovery_done' | 'proposal_sent' | 'negotiating' | 'closed_won' | 'closed_lost'
+  stageOrder: number
+  notes: string
+  nextStep: string
+  createdAt: string
+}
+
+export interface DiscoveryCall {
+  id: string
+  company: string
+  contact: string
+  scheduledAt: string
+  duration: number
+  status: 'scheduled' | 'completed' | 'cancelled' | 'rescheduled'
+  qualificationScore: number
+  needsIdentified: string[]
+  budgetRange: string
+  timeline: string
+  decisionMaker: boolean
+  notes: string
+}
+
+export interface MarketIntel {
+  id: string
+  clientId: string
+  type: 'industry' | 'competitor' | 'keyword' | 'trend' | 'benchmark'
+  title: string
+  summary: string
+  source: string
+  date: string
+  relevance: 'high' | 'medium' | 'low'
+}
+
+export interface ScopeChange {
+  id: string
+  clientId: string
+  description: string
+  impact: 'minor' | 'moderate' | 'major'
+  status: 'detected' | 'triaged' | 'amendment_drafted' | 'amendment_sent' | 'resolved'
+  detectedAt: string
+  resolvedAt: string
+  mrrImpact: number
+  notes: string
+}
+
 // ─── Agent Configuration from blueprint ───────────────────────────────
 
 export const AGENT_DEFINITIONS: Omit<Agent, 'id' | 'status' | 'utilization' | 'lastActive'>[] = [

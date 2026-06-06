@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece } from '../types'
+import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange } from '../types'
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
@@ -30,6 +30,10 @@ export interface AppState {
   emailCampaigns: EmailCampaign[]
   socialPosts: SocialPost[]
   contentPieces: ContentPiece[]
+  pitchDeals: PitchDeal[]
+  discoveryCalls: DiscoveryCall[]
+  marketIntel: MarketIntel[]
+  scopeChanges: ScopeChange[]
   loading: boolean
 
   toggleDark: () => void
@@ -67,6 +71,14 @@ export interface AppState {
   updateSocialPost: (id: string, data: Partial<SocialPost>) => void
   addContentPiece: (c: Omit<ContentPiece, 'id'>) => void
   updateContentPiece: (id: string, data: Partial<ContentPiece>) => void
+  addPitchDeal: (d: Omit<PitchDeal, 'id' | 'createdAt'>) => void
+  updatePitchDeal: (id: string, data: Partial<PitchDeal>) => void
+  addDiscoveryCall: (d: Omit<DiscoveryCall, 'id'>) => void
+  updateDiscoveryCall: (id: string, data: Partial<DiscoveryCall>) => void
+  addMarketIntel: (m: Omit<MarketIntel, 'id'>) => void
+  updateMarketIntel: (id: string, data: Partial<MarketIntel>) => void
+  addScopeChange: (s: Omit<ScopeChange, 'id' | 'detectedAt'>) => void
+  updateScopeChange: (id: string, data: Partial<ScopeChange>) => void
 
   exportData: () => string
   importData: (json: string) => void
@@ -170,6 +182,34 @@ const sampleContentPieces: ContentPiece[] = [
   { id: uid(), clientId: sampleClients[3].id, type: 'social_asset', title: 'Luxury Home Buyer Guide Carousel', status: 'production', assignee: 'brand-designer', dueDate: daysFromNow(5), publishedAt: '', url: '' },
 ]
 
+const samplePitchDeals: PitchDeal[] = [
+  { id: uid(), company: 'BayView Medical Group', contact: 'Dr. James Wong', contactRole: 'CEO', targetTier: 'Scale', estimatedMRR: 7500, stage: 'negotiating', stageOrder: 6, notes: 'Very interested in full-service. Budget approved.', nextStep: 'Send final SOW with pricing', createdAt: daysAgo(21) },
+  { id: uid(), company: 'Metro Insurance Brokers', contact: 'Lisa Adams', contactRole: 'VP Marketing', targetTier: 'Growth', estimatedMRR: 5500, stage: 'discovery_done', stageOrder: 4, notes: 'Discovery completed. Identified content + paid media needs.', nextStep: 'Draft proposal by Friday', createdAt: daysAgo(14) },
+  { id: uid(), company: 'NovaTech Solutions', contact: 'Sarah Chen', contactRole: 'CMO', targetTier: 'Growth', estimatedMRR: 5000, stage: 'proposal_sent', stageOrder: 5, notes: 'Proposal sent. Competitive situation.', nextStep: 'Follow up Thursday', createdAt: daysAgo(10) },
+  { id: uid(), company: 'Elite Fitness Clubs', contact: 'Mark Torres', contactRole: 'Owner', targetTier: 'Scale', estimatedMRR: 8000, stage: 'discovery_scheduled', stageOrder: 3, notes: 'Discovery call scheduled for next Tuesday.', nextStep: 'Prep discovery deck', createdAt: daysAgo(5) },
+  { id: uid(), company: 'Greenleaf Organics', contact: 'David Park', contactRole: 'Director', targetTier: 'Foundation', estimatedMRR: 2500, stage: 'contacted', stageOrder: 2, notes: 'Initial email sent. No reply yet.', nextStep: 'Send follow-up email', createdAt: daysAgo(3) },
+  { id: uid(), company: 'Heritage Bank Local', contact: 'Jennifer Walsh', contactRole: 'SVP Marketing', targetTier: 'Growth', estimatedMRR: 4500, stage: 'research', stageOrder: 1, notes: 'Added to target list from industry research.', nextStep: 'Research and find contact info', createdAt: daysAgo(1) },
+]
+
+const sampleDiscoveryCalls: DiscoveryCall[] = [
+  { id: uid(), company: 'BayView Medical Group', contact: 'Dr. James Wong', scheduledAt: daysAgo(7), duration: 45, status: 'completed', qualificationScore: 85, needsIdentified: ['Brand positioning', 'Patient acquisition', 'Content strategy'], budgetRange: '$7k-10k/mo', timeline: 'Next 30 days', decisionMaker: true, notes: 'Strong fit for Scale tier. Decision maker engaged.' },
+  { id: uid(), company: 'Metro Insurance Brokers', contact: 'Lisa Adams', scheduledAt: daysAgo(10), duration: 40, status: 'completed', qualificationScore: 70, needsIdentified: ['Content pipeline', 'Paid media management', 'Social media'], budgetRange: '$4k-6k/mo', timeline: 'Next 45 days', decisionMaker: false, notes: 'Needs to loop in VP. Good engagement.' },
+  { id: uid(), company: 'Elite Fitness Clubs', contact: 'Mark Torres', scheduledAt: daysFromNow(4), duration: 30, status: 'scheduled', qualificationScore: 0, needsIdentified: [], budgetRange: '', timeline: '', decisionMaker: false, notes: 'Discovery call scheduled.' },
+]
+
+const sampleMarketIntel: MarketIntel[] = [
+  { id: uid(), clientId: sampleClients[0].id, type: 'competitor', title: 'Aspen Dental - Ad Spend Analysis', summary: 'Aspen Dental increasing local search spend ~30% QoQ in metro areas.', source: 'SEMrush', date: daysAgo(2), relevance: 'high' },
+  { id: uid(), clientId: sampleClients[0].id, type: 'keyword', title: 'Dental Implant Search Trends', summary: '"dental implants" search up 18% YoY. Local intent keywords growing.', source: 'Google Trends', date: daysAgo(3), relevance: 'high' },
+  { id: uid(), clientId: sampleClients[1].id, type: 'industry', title: 'Roofing Industry Seasonality Report', summary: 'Q2-Q3 peak season. Competitor ad spend spikes April-June.', source: 'IBISWorld', date: daysAgo(5), relevance: 'high' },
+  { id: uid(), clientId: sampleClients[3].id, type: 'benchmark', title: 'Real Estate Marketing Benchmarks', summary: 'Avg. real estate agency spends 8-12% of revenue on marketing.', source: 'NAEA', date: daysAgo(7), relevance: 'medium' },
+]
+
+const sampleScopeChanges: ScopeChange[] = [
+  { id: uid(), clientId: sampleClients[0].id, description: 'Unplanned video testimonial shoot added mid-cycle, no SOW amendment', impact: 'minor', status: 'detected', detectedAt: daysAgo(1), resolvedAt: '', mrrImpact: 0, notes: 'Account manager approved verbally. Needs formal amendment.' },
+  { id: uid(), clientId: sampleClients[3].id, description: 'Additional 4 social posts per week requested without scope discussion', impact: 'minor', status: 'triaged', detectedAt: daysAgo(3), resolvedAt: '', mrrImpact: 500, notes: 'Triaged. Estimated 2h/week extra. Amendment drafted.' },
+  { id: uid(), clientId: sampleClients[1].id, description: 'Requesting weekly reporting package instead of monthly (3x reporting effort)', impact: 'moderate', status: 'amendment_drafted', detectedAt: daysAgo(7), resolvedAt: '', mrrImpact: 750, notes: 'Amendment ready for client review. +$750/mo for expanded reporting.' },
+]
+
 // ─── Build from blueprint ──────────────────────────────────────────────
 
 const buildAgents = (): Agent[] =>
@@ -226,13 +266,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   emailCampaigns: sampleEmailCampaigns,
   socialPosts: sampleSocialPosts,
   contentPieces: sampleContentPieces,
+  pitchDeals: samplePitchDeals,
+  discoveryCalls: sampleDiscoveryCalls,
+  marketIntel: sampleMarketIntel,
+  scopeChanges: sampleScopeChanges,
   weeklyNotes: [],
-    creativeAssets: sampleAssets,
-    campaigns: sampleCampaigns,
-    seoKeywords: sampleSeoKeywords,
-    emailCampaigns: sampleEmailCampaigns,
-    socialPosts: sampleSocialPosts,
-    contentPieces: sampleContentPieces,
   loading: false,
 
   toggleDark: () => set(s => ({ dark: !s.dark })),
@@ -271,10 +309,18 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateSocialPost: (id, data) => set(s => ({ socialPosts: s.socialPosts.map(p => p.id === id ? { ...p, ...data } : p) })),
   addContentPiece: (c) => set(s => ({ contentPieces: [...s.contentPieces, { id: uid(), ...c }] })),
   updateContentPiece: (id, data) => set(s => ({ contentPieces: s.contentPieces.map(c => c.id === id ? { ...c, ...data } : c) })),
+  addPitchDeal: (d) => set(s => ({ pitchDeals: [...s.pitchDeals, { id: uid(), createdAt: new Date().toISOString(), ...d }] })),
+  updatePitchDeal: (id, data) => set(s => ({ pitchDeals: s.pitchDeals.map(d => d.id === id ? { ...d, ...data } : d) })),
+  addDiscoveryCall: (d) => set(s => ({ discoveryCalls: [...s.discoveryCalls, { id: uid(), ...d }] })),
+  updateDiscoveryCall: (id, data) => set(s => ({ discoveryCalls: s.discoveryCalls.map(d => d.id === id ? { ...d, ...data } : d) })),
+  addMarketIntel: (m) => set(s => ({ marketIntel: [...s.marketIntel, { id: uid(), ...m }] })),
+  updateMarketIntel: (id, data) => set(s => ({ marketIntel: s.marketIntel.map(m => m.id === id ? { ...m, ...data } : m) })),
+  addScopeChange: (s) => set(s => ({ scopeChanges: [...s.scopeChanges, { id: uid(), detectedAt: new Date().toISOString().slice(0, 10), ...s }] })),
+  updateScopeChange: (id, data) => set(s => ({ scopeChanges: s.scopeChanges.map(s => s.id === id ? { ...s, ...data } : s) })),
 
   exportData: () => {
-    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces } = get()
-    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, exportedAt: new Date().toISOString() }, null, 2)
+    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges } = get()
+    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, exportedAt: new Date().toISOString() }, null, 2)
   },
 
   importData: (json) => {
@@ -297,6 +343,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         emailCampaigns: data.emailCampaigns || [],
         socialPosts: data.socialPosts || [],
         contentPieces: data.contentPieces || [],
+        pitchDeals: data.pitchDeals || [],
+        discoveryCalls: data.discoveryCalls || [],
+        marketIntel: data.marketIntel || [],
+        scopeChanges: data.scopeChanges || [],
       })
     } catch { alert('Invalid import data') }
   },
@@ -318,5 +368,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     emailCampaigns: sampleEmailCampaigns,
     socialPosts: sampleSocialPosts,
     contentPieces: sampleContentPieces,
+    pitchDeals: samplePitchDeals,
+    discoveryCalls: sampleDiscoveryCalls,
+    marketIntel: sampleMarketIntel,
+    scopeChanges: sampleScopeChanges,
   }),
 }))
