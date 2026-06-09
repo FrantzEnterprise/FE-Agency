@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange } from '../types'
+import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig } from '../types'
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
@@ -34,6 +34,9 @@ export interface AppState {
   discoveryCalls: DiscoveryCall[]
   marketIntel: MarketIntel[]
   scopeChanges: ScopeChange[]
+  aiJobs: AiGenerationJob[]
+  socialQueue: SocialQueueItem[]
+  apiConfig: ApiConfig
   loading: boolean
 
   toggleDark: () => void
@@ -79,6 +82,11 @@ export interface AppState {
   updateMarketIntel: (id: string, data: Partial<MarketIntel>) => void
   addScopeChange: (s: Omit<ScopeChange, 'id' | 'detectedAt'>) => void
   updateScopeChange: (id: string, data: Partial<ScopeChange>) => void
+  addAiJob: (j: Omit<AiGenerationJob, 'id' | 'createdAt' | 'completedAt' | 'status'>) => void
+  updateAiJob: (id: string, data: Partial<AiGenerationJob>) => void
+  addSocialQueueItem: (q: Omit<SocialQueueItem, 'id'>) => void
+  updateSocialQueueItem: (id: string, data: Partial<SocialQueueItem>) => void
+  updateApiConfig: (c: Partial<ApiConfig>) => void
 
   exportData: () => string
   importData: (json: string) => void
@@ -270,6 +278,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   discoveryCalls: sampleDiscoveryCalls,
   marketIntel: sampleMarketIntel,
   scopeChanges: sampleScopeChanges,
+  aiJobs: [],
+  socialQueue: [],
+  apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
   weeklyNotes: [],
   loading: false,
 
@@ -317,10 +328,15 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateMarketIntel: (id, data) => set(s => ({ marketIntel: s.marketIntel.map(m => m.id === id ? { ...m, ...data } : m) })),
   addScopeChange: (s) => set(s => ({ scopeChanges: [...s.scopeChanges, { id: uid(), detectedAt: new Date().toISOString().slice(0, 10), ...s }] })),
   updateScopeChange: (id, data) => set(s => ({ scopeChanges: s.scopeChanges.map(s => s.id === id ? { ...s, ...data } : s) })),
+  addAiJob: (j) => set(s => ({ aiJobs: [...s.aiJobs, { id: uid(), status: 'pending', createdAt: new Date().toISOString().slice(0, 10), completedAt: '', ...j }] })),
+  updateAiJob: (id, data) => set(s => ({ aiJobs: s.aiJobs.map(j => j.id === id ? { ...j, ...data } : j) })),
+  addSocialQueueItem: (q) => set(s => ({ socialQueue: [...s.socialQueue, { id: uid(), ...q }] })),
+  updateSocialQueueItem: (id, data) => set(s => ({ socialQueue: s.socialQueue.map(q => q.id === id ? { ...q, ...data } : q) })),
+  updateApiConfig: (c) => set(s => ({ apiConfig: { ...s.apiConfig, ...c } })),
 
   exportData: () => {
-    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges } = get()
-    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, exportedAt: new Date().toISOString() }, null, 2)
+    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig } = get()
+    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, exportedAt: new Date().toISOString() }, null, 2)
   },
 
   importData: (json) => {
@@ -347,6 +363,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         discoveryCalls: data.discoveryCalls || [],
         marketIntel: data.marketIntel || [],
         scopeChanges: data.scopeChanges || [],
+        aiJobs: data.aiJobs || [],
+        socialQueue: data.socialQueue || [],
+        apiConfig: data.apiConfig || { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
       })
     } catch { alert('Invalid import data') }
   },
@@ -372,5 +391,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     discoveryCalls: sampleDiscoveryCalls,
     marketIntel: sampleMarketIntel,
     scopeChanges: sampleScopeChanges,
+    aiJobs: [],
+    socialQueue: [],
+    apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
   }),
 }))

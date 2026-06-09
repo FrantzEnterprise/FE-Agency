@@ -247,6 +247,40 @@ export interface ScopeChange {
   notes: string
 }
 
+export interface AiGenerationJob {
+  id: string
+  contentType: 'text' | 'image' | 'video'
+  prompt: string
+  result: string
+  status: 'pending' | 'generating' | 'complete' | 'failed'
+  error: string
+  createdAt: string
+  completedAt: string
+  model: string
+  metadata: Record<string, string>
+}
+
+export interface SocialQueueItem {
+  id: string
+  clientId: string
+  content: string
+  mediaUrl: string
+  platform: 'linkedin' | 'google_business' | 'yelp' | 'amazon' | 'reddit' | 'facebook' | 'instagram' | 'twitter' | 'tiktok'
+  status: 'draft' | 'queued' | 'posted' | 'failed'
+  scheduledAt: string
+  postedAt: string
+  platformPostId: string
+  error: string
+}
+
+export interface ApiConfig {
+  baseUrl: string
+  apiKey: string
+  textModel: string
+  imageModel: string
+  videoModel: string
+}
+
 // ─── Agent Configuration from blueprint ───────────────────────────────
 
 export const AGENT_DEFINITIONS: Omit<Agent, 'id' | 'status' | 'utilization' | 'lastActive'>[] = [

@@ -31,6 +31,8 @@ import PitchEnginePage from './components/PitchEnginePage'
 import DiscoveryCallPage from './components/DiscoveryCallPage'
 import MarketResearcherPage from './components/MarketResearcherPage'
 import ScopeCreepPage from './components/ScopeCreepPage'
+import AiContentStudio from './components/AiContentStudio'
+import SocialPublisher from './components/SocialPublisher'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -63,6 +65,8 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   'discovery-call': { title: 'Discovery Call Orchestrator', component: <DiscoveryCallPage /> },
   'market-research': { title: 'Market Researcher', component: <MarketResearcherPage /> },
   'scope-creep': { title: 'Scope Creep Recovery', component: <ScopeCreepPage /> },
+  'ai-content': { title: 'AI Content Studio', component: <AiContentStudio /> },
+  'social-publisher': { title: 'Social Publisher', component: <SocialPublisher /> },
 }
 
 export default function App() {

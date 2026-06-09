@@ -6,7 +6,7 @@ import {
   Megaphone, Search, Mail, Camera, Palette, GitBranch,
   Receipt, ScrollText, HeartPulse, FileBarChart,
   Rocket, Speech, Shield, CalendarCheck, CheckCircle,
-  PhoneCall, Compass, AlertTriangle,
+  PhoneCall, Compass, AlertTriangle, Sparkles, Share2,
   ChevronDown, ChevronRight
 } from 'lucide-react'
 
@@ -84,6 +84,13 @@ const categories: Category[] = [
       { id: 'discovery-call', label: 'Discovery Calls', icon: <PhoneCall size={18} /> },
       { id: 'market-research', label: 'Market Researcher', icon: <Compass size={18} /> },
       { id: 'scope-creep', label: 'Scope Creep', icon: <AlertTriangle size={18} /> },
+    ],
+  },
+  {
+    label: 'CREATION',
+    items: [
+      { id: 'ai-content', label: 'AI Content Studio', icon: <Sparkles size={18} /> },
+      { id: 'social-publisher', label: 'Social Publisher', icon: <Share2 size={18} /> },
     ],
   },
 ]
