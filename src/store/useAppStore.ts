@@ -251,6 +251,69 @@ const sampleScopeChanges: ScopeChange[] = [
   { id: uid(), clientId: sampleClients[1].id, description: 'Requesting weekly reporting package instead of monthly (3x reporting effort)', impact: 'moderate', status: 'amendment_drafted', detectedAt: daysAgo(7), resolvedAt: '', mrrImpact: 750, notes: 'Amendment ready for client review. +$750/mo for expanded reporting.' },
 ]
 
+const sampleContactLists: ContactList[] = [
+  { id: uid(), clientId: sampleClients[0].id, name: 'BrightPath Patient Newsletter', description: 'All active dental patients for monthly newsletter campaign', contacts: [
+    { id: uid(), email: 'john.doe@email.com', name: 'John Doe', company: '', phone: '555-0101', tags: ['patient', 'established'], source: 'manual', subscribed: true, subscribedAt: daysAgo(120), unsubscribedAt: '', lastOpened: daysAgo(3), lastClicked: daysAgo(7), totalOpens: 24, totalClicks: 8, createdAt: daysAgo(120) },
+    { id: uid(), email: 'jane.smith@email.com', name: 'Jane Smith', company: '', phone: '555-0102', tags: ['patient', 'new'], source: 'webform', subscribed: true, subscribedAt: daysAgo(30), unsubscribedAt: '', lastOpened: daysAgo(1), lastClicked: daysAgo(2), totalOpens: 6, totalClicks: 3, createdAt: daysAgo(30) },
+    { id: uid(), email: 'bob.wilson@email.com', name: 'Bob Wilson', company: '', phone: '555-0103', tags: ['patient', 'vip'], source: 'manual', subscribed: true, subscribedAt: daysAgo(365), unsubscribedAt: '', lastOpened: daysAgo(0), lastClicked: daysAgo(1), totalOpens: 56, totalClicks: 22, createdAt: daysAgo(365) },
+    { id: uid(), email: 'alice.brown@email.com', name: 'Alice Brown', company: '', phone: '555-0104', tags: ['lead', 'consultation'], source: 'webform', subscribed: true, subscribedAt: daysAgo(14), unsubscribedAt: '', lastOpened: daysAgo(0), lastClicked: '', totalOpens: 3, totalClicks: 0, createdAt: daysAgo(14) },
+  ], tags: ['patient', 'newsletter', 'active'], createdAt: daysAgo(120) },
+  { id: uid(), clientId: sampleClients[1].id, name: 'Summit Roofing Prospects', description: 'Lead list from roofing estimate requests and website forms', contacts: [
+    { id: uid(), email: 'mike.johnson@email.com', name: 'Mike Johnson', company: 'Johnson Properties', phone: '555-0201', tags: ['commercial', 'estimate'], source: 'webform', subscribed: true, subscribedAt: daysAgo(45), unsubscribedAt: '', lastOpened: daysAgo(2), lastClicked: daysAgo(5), totalOpens: 8, totalClicks: 3, createdAt: daysAgo(45) },
+    { id: uid(), email: 'sarah.davis@email.com', name: 'Sarah Davis', company: '', phone: '555-0202', tags: ['residential', 'roof-repair'], source: 'lead', subscribed: true, subscribedAt: daysAgo(21), unsubscribedAt: '', lastOpened: daysAgo(1), lastClicked: '', totalOpens: 4, totalClicks: 0, createdAt: daysAgo(21) },
+  ], tags: ['roofing', 'prospects', 'residential', 'commercial'], createdAt: daysAgo(60) },
+  { id: uid(), clientId: sampleClients[3].id, name: 'Coastal Realty Buyer Leads', description: 'Qualified buyer leads for luxury property listings', contacts: [
+    { id: uid(), email: 'david.miller@email.com', name: 'David Miller', company: 'Miller Financial', phone: '555-0301', tags: ['buyer', 'luxury', 'active'], source: 'lead', subscribed: true, subscribedAt: daysAgo(60), unsubscribedAt: '', lastOpened: daysAgo(0), lastClicked: daysAgo(0), totalOpens: 18, totalClicks: 7, createdAt: daysAgo(60) },
+  ], tags: ['real-estate', 'buyers', 'luxury'], createdAt: daysAgo(90) },
+]
+
+const sampleAutoresponders: Autoresponder[] = [
+  {
+    id: uid(), clientId: sampleClients[0].id, name: 'New Patient Welcome Sequence', description: '5-email onboarding drip for new dental patients', status: 'active',
+    trigger: { type: 'subscribed', value: '', description: 'When a new contact subscribes to the BrightPath newsletter list' },
+    steps: [
+      { id: uid(), order: 1, delayDays: 0, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: 'Welcome to BrightPath Dental! 🦷', body: '<h2>Welcome to the BrightPath family!</h2><p>We\'re thrilled to have you on board. Here\'s what you can expect from us:</p><ul><li>Monthly dental health tips</li><li>Exclusive patient offers</li><li>New service announcements</li></ul><p><a href="#">Book your next appointment</a></p>', conditions: [] },
+      { id: uid(), order: 2, delayDays: 3, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: '5 Tips for a Brighter Smile', body: '<h2>5 Tips for a Brighter Smile</h2><p>Our top dentist-recommended tips for maintaining healthy teeth between visits...</p><p><a href="#">Read the full guide</a></p>', conditions: [{ field: 'opened', operator: 'is', value: 'true' }] },
+      { id: uid(), order: 3, delayDays: 7, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: 'Your First Visit Guide', body: '<h2>What to Expect at Your First Visit</h2><p>Getting nervous? Don\'t be! Here\'s a step-by-step guide to your first appointment...</p>', conditions: [] },
+      { id: uid(), order: 4, delayDays: 14, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: 'Patient Rewards Program', body: '<h2>You Could Save $100+ Per Year</h2><p>Did you know about our patient rewards program? Earn points for every visit...</p>', conditions: [{ field: 'clicked', operator: 'is', value: 'true' }] },
+      { id: uid(), order: 5, delayDays: 30, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: 'We Miss You!', body: '<p>It\'s been a while since we last connected. Here\'s a special offer just for you...</p>', conditions: [] },
+    ],
+    stats: { totalTriggered: 340, activeInSequence: 68, completedSequence: 245, unsubscribed: 12, totalSent: 1250, totalOpens: 890, totalClicks: 445, totalBounces: 18, conversionRate: 34.5 },
+    createdAt: daysAgo(90), updatedAt: daysAgo(5),
+  },
+  {
+    id: uid(), clientId: sampleClients[1].id, name: 'Roofing Estimate Follow-Up', description: '3-email sequence after someone requests a roofing estimate', status: 'active',
+    trigger: { type: 'form_submitted', value: 'estimate_request', description: 'When a contact submits a roofing estimate request form' },
+    steps: [
+      { id: uid(), order: 1, delayDays: 0, delayHours: 1, action: 'send_email', emailTemplateId: '', subject: 'Thanks for Your Roofing Request!', body: '<h2>We\'ll Be in Touch Shortly</h2><p>Thank you for reaching out! A Summit Roofing specialist will contact you within 24 hours to schedule your free estimate.</p><p>In the meantime, check out our <a href="#">recent projects gallery</a>.</p>', conditions: [] },
+      { id: uid(), order: 2, delayDays: 3, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: 'Thinking About Roof Materials?', body: '<h2>Choosing the Right Roof</h2><p>Here\'s our guide to asphalt shingles vs metal roofing vs tile...</p>', conditions: [] },
+      { id: uid(), order: 3, delayDays: 14, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: 'Still Considering a New Roof?', body: '<p>Just checking in! Summer is our busiest season. Lock in your spring pricing today.</p>', conditions: [{ field: 'clicked', operator: 'is_not', value: 'true' }] },
+    ],
+    stats: { totalTriggered: 180, activeInSequence: 42, completedSequence: 110, unsubscribed: 5, totalSent: 420, totalOpens: 290, totalClicks: 155, totalBounces: 8, conversionRate: 22.8 },
+    createdAt: daysAgo(60), updatedAt: daysAgo(3),
+  },
+  {
+    id: uid(), clientId: sampleClients[4].id, name: 'Service Reminder Campaign', description: 'Annual service reminders for Precision Auto Works customers', status: 'active',
+    trigger: { type: 'date_reached', value: 'last_service + 11 months', description: '11 months after last service date' },
+    steps: [
+      { id: uid(), order: 1, delayDays: 0, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: 'Time for Your Service Check!', body: '<h2>It\'s Almost Been a Year!</h2><p>Your Precision Auto Works service reminder — schedule your annual maintenance check today.</p><p><a href="#">Book Now</a></p>', conditions: [] },
+      { id: uid(), order: 2, delayDays: 14, delayHours: 0, action: 'send_email', emailTemplateId: '', subject: 'Last Chance — Service Special', body: '<p>This month only: 10% off all scheduled maintenance services. Don\'t let your warranty lapse!</p>', conditions: [{ field: 'opened', operator: 'is_not', value: 'true' }] },
+    ],
+    stats: { totalTriggered: 620, activeInSequence: 0, completedSequence: 580, unsubscribed: 22, totalSent: 1860, totalOpens: 1340, totalClicks: 680, totalBounces: 30, conversionRate: 42.1 },
+    createdAt: daysAgo(180), updatedAt: daysAgo(10),
+  },
+]
+
+const sampleEmailTemplates: EmailTemplate[] = [
+  { id: uid(), clientId: sampleClients[0].id, name: 'Monthly Newsletter Template', subject: '{{client_name}} Monthly Update: {{month}}', previewText: 'Your monthly update from the team', body: '<h2>{{title}}</h2><p>{{body_content}}</p><p><a href="{{cta_url}}">{{cta_text}}</a></p>', category: 'educational', lastUsed: daysAgo(14), createdAt: daysAgo(120) },
+  { id: uid(), clientId: sampleClients[0].id, name: 'Appointment Reminder', subject: 'Reminder: Your Appointment at {{client_name}}', previewText: 'You have an appointment coming up', body: '<p>Hi {{first_name}},</p><p>This is a friendly reminder about your upcoming appointment at {{client_name}} on {{appointment_date}}.</p><p><a href="{{reschedule_url}}">Reschedule if needed</a></p>', category: 'transactional', lastUsed: daysAgo(1), createdAt: daysAgo(180) },
+  { id: uid(), clientId: sampleClients[1].id, name: 'Estimate Follow-Up', subject: 'Your Roofing Estimate from Summit Roofing', previewText: 'Details about your recent roofing estimate', body: '<h2>Your Estimate Summary</h2><p>Hi {{first_name}},</p><p>As requested, here\'s a summary of your roofing estimate...</p>', category: 'transactional', lastUsed: daysAgo(3), createdAt: daysAgo(60) },
+  { id: uid(), clientId: sampleClients[3].id, name: 'New Listing Alert', subject: 'Just Listed: {{property_address}}', previewText: 'A new property just hit the market', body: '<h2>New Listing!</h2><p>We\'re excited to present {{property_description}}.</p><p><a href="{{listing_url}}">View Property Details</a></p>', category: 'promotional', lastUsed: daysAgo(7), createdAt: daysAgo(90) },
+  { id: uid(), clientId: sampleClients[4].id, name: 'Service Due Reminder', subject: 'Your Vehicle is Due for Service', previewText: 'Schedule your service appointment today', body: '<h2>Service Reminder</h2><p>Hi {{first_name}},</p><p>Your {{vehicle_make_model}} is due for {{service_type}}.</p>', category: 'lifecycle', lastUsed: daysAgo(5), createdAt: daysAgo(180) },
+  { id: uid(), clientId: '', name: 'Re-engagement Email', subject: 'We Miss You at {{client_name}}', previewText: 'Come back for a special offer', body: '<h2>It\'s Been a While...</h2><p>We noticed you haven\'t visited lately. Here\'s a special offer just for you.</p>', category: 'reengagement', lastUsed: daysAgo(30), createdAt: daysAgo(200) },
+  { id: uid(), clientId: '', name: 'Thank You Page Follow-Up', subject: 'Thanks for Your Interest!', previewText: 'Here\'s what happens next', body: '<h2>Thank You!</h2><p>We received your request and will be in touch shortly.</p>', category: 'transactional', lastUsed: daysAgo(2), createdAt: daysAgo(150) },
+]
+
 // ─── Build from blueprint ──────────────────────────────────────────────
 
 const buildAgents = (): Agent[] =>
