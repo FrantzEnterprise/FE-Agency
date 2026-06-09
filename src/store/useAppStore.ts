@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage } from '../types'
+import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate } from '../types'
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
@@ -44,6 +44,9 @@ export interface AppState {
   clientMessages: ClientMessage[]
   portalViewClientId: string | null
   loading: boolean
+  contactLists: ContactList[]
+  autoresponders: Autoresponder[]
+  emailTemplates: EmailTemplate[]
 
   toggleDark: () => void
   setActiveModule: (m: string) => void
@@ -104,6 +107,19 @@ export interface AppState {
   addClientMessage: (m: Omit<ClientMessage, 'id' | 'createdAt'>) => void
   updateClientMessage: (id: string, data: Partial<ClientMessage>) => void
   setPortalViewClientId: (id: string | null) => void
+
+  addContactList: (c: Omit<ContactList, 'id' | 'createdAt'>) => void
+  updateContactList: (id: string, data: Partial<ContactList>) => void
+  addContactToList: (listId: string, contact: Omit<ContactEntry, 'id' | 'createdAt' | 'lastOpened' | 'lastClicked' | 'totalOpens' | 'totalClicks'>) => void
+  removeContactFromList: (listId: string, contactId: string) => void
+  updateContact: (listId: string, contactId: string, data: Partial<ContactEntry>) => void
+  addAutoresponder: (a: Omit<Autoresponder, 'id' | 'createdAt' | 'updatedAt'>) => void
+  updateAutoresponder: (id: string, data: Partial<Autoresponder>) => void
+  addAutoresponderStep: (autoresponderId: string, step: Omit<AutoresponderStep, 'id'>) => void
+  removeAutoresponderStep: (autoresponderId: string, stepId: string) => void
+  updateAutoresponderStep: (autoresponderId: string, stepId: string, data: Partial<AutoresponderStep>) => void
+  addEmailTemplate: (t: Omit<EmailTemplate, 'id' | 'createdAt'>) => void
+  updateEmailTemplate: (id: string, data: Partial<EmailTemplate>) => void
 
   exportData: () => string
   importData: (json: string) => void
@@ -306,6 +322,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   portalViewClientId: null,
   weeklyNotes: [],
   loading: false,
+  contactLists: sampleContactLists,
+  autoresponders: sampleAutoresponders,
+  emailTemplates: sampleEmailTemplates,
 
   toggleDark: () => set(s => ({ dark: !s.dark })),
   setActiveModule: (m) => set({ activeModule: m }),
@@ -368,9 +387,34 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateClientMessage: (id, data) => set(s => ({ clientMessages: s.clientMessages.map(m => m.id === id ? { ...m, ...data } : m) })),
   setPortalViewClientId: (id) => set({ portalViewClientId: id }),
 
+  addContactList: (c) => set(s => ({ contactLists: [...s.contactLists, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), ...c }] })),
+  updateContactList: (id, data) => set(s => ({ contactLists: s.contactLists.map(c => c.id === id ? { ...c, ...data } : c) })),
+  addContactToList: (listId, contact) => set(s => ({
+    contactLists: s.contactLists.map(c => c.id === listId ? { ...c, contacts: [...c.contacts, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), lastOpened: '', lastClicked: '', totalOpens: 0, totalClicks: 0, ...contact }] } : c)
+  })),
+  removeContactFromList: (listId, contactId) => set(s => ({
+    contactLists: s.contactLists.map(c => c.id === listId ? { ...c, contacts: c.contacts.filter(c => c.id !== contactId) } : c)
+  })),
+  updateContact: (listId, contactId, data) => set(s => ({
+    contactLists: s.contactLists.map(c => c.id === listId ? { ...c, contacts: c.contacts.map(c => c.id === contactId ? { ...c, ...data } : c) } : c)
+  })),
+  addAutoresponder: (a) => set(s => ({ autoresponders: [...s.autoresponders, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10), ...a }] })),
+  updateAutoresponder: (id, data) => set(s => ({ autoresponders: s.autoresponders.map(a => a.id === id ? { ...a, ...data, updatedAt: new Date().toISOString().slice(0, 10) } : a) })),
+  addAutoresponderStep: (autoresponderId, step) => set(s => ({
+    autoresponders: s.autoresponders.map(a => a.id === autoresponderId ? { ...a, steps: [...a.steps, { id: uid(), ...step }] } : a)
+  })),
+  removeAutoresponderStep: (autoresponderId, stepId) => set(s => ({
+    autoresponders: s.autoresponders.map(a => a.id === autoresponderId ? { ...a, steps: a.steps.filter(s => s.id !== stepId) } : a)
+  })),
+  updateAutoresponderStep: (autoresponderId, stepId, data) => set(s => ({
+    autoresponders: s.autoresponders.map(a => a.id === autoresponderId ? { ...a, steps: a.steps.map(s => s.id === stepId ? { ...s, ...data } : s) } : a)
+  })),
+  addEmailTemplate: (t) => set(s => ({ emailTemplates: [...s.emailTemplates, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), ...t }] })),
+  updateEmailTemplate: (id, data) => set(s => ({ emailTemplates: s.emailTemplates.map(t => t.id === id ? { ...t, ...data } : t) })),
+
   exportData: () => {
-    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages } = get()
-    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, exportedAt: new Date().toISOString() }, null, 2)
+    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates } = get()
+    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates, exportedAt: new Date().toISOString() }, null, 2)
   },
 
   importData: (json) => {
@@ -391,6 +435,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         campaigns: data.campaigns || [],
         seoKeywords: data.seoKeywords || [],
         emailCampaigns: data.emailCampaigns || [],
+        contactLists: data.contactLists || [],
+        autoresponders: data.autoresponders || [],
+        emailTemplates: data.emailTemplates || [],
         socialPosts: data.socialPosts || [],
         contentPieces: data.contentPieces || [],
         pitchDeals: data.pitchDeals || [],
@@ -424,6 +471,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     campaigns: sampleCampaigns,
     seoKeywords: sampleSeoKeywords,
     emailCampaigns: sampleEmailCampaigns,
+    contactLists: sampleContactLists,
+    autoresponders: sampleAutoresponders,
+    emailTemplates: sampleEmailTemplates,
     socialPosts: sampleSocialPosts,
     contentPieces: sampleContentPieces,
     pitchDeals: samplePitchDeals,
