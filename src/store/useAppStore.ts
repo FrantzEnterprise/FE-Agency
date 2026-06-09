@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings } from '../types'
+import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage } from '../types'
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
@@ -39,6 +39,10 @@ export interface AppState {
   apiConfig: ApiConfig
   integrations: Integration[]
   settings: AgencySettings
+  portalInvites: PortalInvite[]
+  clientApprovals: ClientApproval[]
+  clientMessages: ClientMessage[]
+  portalViewClientId: string | null
   loading: boolean
 
   toggleDark: () => void
@@ -93,6 +97,13 @@ export interface AppState {
   updateIntegration: (id: string, data: Partial<Integration>) => void
   removeIntegration: (id: string) => void
   updateSettings: (s: Partial<AgencySettings>) => void
+  addPortalInvite: (i: Omit<PortalInvite, 'id' | 'createdAt'>) => void
+  updatePortalInvite: (id: string, data: Partial<PortalInvite>) => void
+  addClientApproval: (a: Omit<ClientApproval, 'id' | 'submittedAt'>) => void
+  updateClientApproval: (id: string, data: Partial<ClientApproval>) => void
+  addClientMessage: (m: Omit<ClientMessage, 'id' | 'createdAt'>) => void
+  updateClientMessage: (id: string, data: Partial<ClientMessage>) => void
+  setPortalViewClientId: (id: string | null) => void
 
   exportData: () => string
   importData: (json: string) => void
@@ -289,6 +300,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
   integrations: [],
   settings: { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
+  portalInvites: [],
+  clientApprovals: [],
+  clientMessages: [],
+  portalViewClientId: null,
   weeklyNotes: [],
   loading: false,
 
@@ -345,10 +360,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateIntegration: (id, data) => set(s => ({ integrations: s.integrations.map(i => i.id === id ? { ...i, ...data } : i) })),
   removeIntegration: (id) => set(s => ({ integrations: s.integrations.filter(i => i.id !== id) })),
   updateSettings: (s) => set(s => ({ settings: { ...s.settings, ...s } })),
+  addPortalInvite: (i) => set(s => ({ portalInvites: [...s.portalInvites, { id: uid(), createdAt: new Date().toISOString(), ...i }] })),
+  updatePortalInvite: (id, data) => set(s => ({ portalInvites: s.portalInvites.map(i => i.id === id ? { ...i, ...data } : i) })),
+  addClientApproval: (a) => set(s => ({ clientApprovals: [...s.clientApprovals, { id: uid(), submittedAt: new Date().toISOString(), ...a }] })),
+  updateClientApproval: (id, data) => set(s => ({ clientApprovals: s.clientApprovals.map(a => a.id === id ? { ...a, ...data } : a) })),
+  addClientMessage: (m) => set(s => ({ clientMessages: [...s.clientMessages, { id: uid(), createdAt: new Date().toISOString(), ...m }] })),
+  updateClientMessage: (id, data) => set(s => ({ clientMessages: s.clientMessages.map(m => m.id === id ? { ...m, ...data } : m) })),
+  setPortalViewClientId: (id) => set({ portalViewClientId: id }),
 
   exportData: () => {
-    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings } = get()
-    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, exportedAt: new Date().toISOString() }, null, 2)
+    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages } = get()
+    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, exportedAt: new Date().toISOString() }, null, 2)
   },
 
   importData: (json) => {
@@ -380,6 +402,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         apiConfig: data.apiConfig || { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
         integrations: data.integrations || [],
         settings: data.settings || { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
+        portalInvites: data.portalInvites || [],
+        clientApprovals: data.clientApprovals || [],
+        clientMessages: data.clientMessages || [],
       })
     } catch { alert('Invalid import data') }
   },
@@ -410,5 +435,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
     integrations: [],
     settings: { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
+    portalInvites: [],
+    clientApprovals: [],
+    clientMessages: [],
+    portalViewClientId: null,
   }),
 }))

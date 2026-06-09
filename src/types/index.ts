@@ -308,6 +308,45 @@ export interface AgencySettings {
   backupIntervalHours: number
 }
 
+export interface PortalInvite {
+  id: string
+  clientId: string
+  token: string
+  email: string
+  contactName: string
+  status: 'pending' | 'active' | 'expired'
+  createdAt: string
+  lastAccessedAt: string
+  expiresAt: string
+}
+
+export interface ClientApproval {
+  id: string
+  clientId: string
+  type: 'content_draft' | 'social_post' | 'creative_asset' | 'campaign' | 'report' | 'proposal'
+  title: string
+  description: string
+  status: 'pending' | 'approved' | 'revisions' | 'rejected'
+  submittedAt: string
+  respondedAt: string
+  responseNotes: string
+  relatedId: string
+  submittedBy: string
+}
+
+export interface ClientMessage {
+  id: string
+  clientId: string
+  authorId: string
+  authorName: string
+  authorRole: 'agency' | 'client'
+  content: string
+  attachments: string[]
+  createdAt: string
+  readAt: string
+  threadId: string
+}
+
 // ─── Agent Configuration from blueprint ───────────────────────────────
 
 export const AGENT_DEFINITIONS: Omit<Agent, 'id' | 'status' | 'utilization' | 'lastActive'>[] = [

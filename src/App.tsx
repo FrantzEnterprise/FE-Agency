@@ -34,7 +34,9 @@ import ScopeCreepPage from './components/ScopeCreepPage'
 import AiContentStudio from './components/AiContentStudio'
 import SocialPublisher from './components/SocialPublisher'
 import SettingsPage from './components/SettingsPage'
-import { Sun, Moon, Download, Upload, RotateCcw, Rocket } from 'lucide-react'
+import ClientPortalPage from './components/ClientPortalPage'
+import ClientPortalView from './components/ClientPortalView'
+import { Sun, Moon, Download, Upload, RotateCcw, Rocket, ExternalLink } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
   dashboard: { title: 'Dashboard', component: <Dashboard /> },
@@ -69,6 +71,7 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   'ai-content': { title: 'AI Content Studio', component: <AiContentStudio /> },
   'social-publisher': { title: 'Social Publisher', component: <SocialPublisher /> },
   settings: { title: 'Settings', component: <SettingsPage /> },
+  'client-portal': { title: 'Client Portal', component: <ClientPortalPage /> },
 }
 
 export default function App() {
@@ -107,7 +110,13 @@ export default function App() {
     input.click()
   }
 
+  // Check for client portal access
+  const hasPortalParam = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('portal')
   const currentModule = modules[activeModule] || modules.dashboard
+
+  if (hasPortalParam) {
+    return <ClientPortalView />
+  }
 
   return (
     <div style={{ height: '100%' }}>
