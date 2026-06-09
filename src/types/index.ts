@@ -281,6 +281,33 @@ export interface ApiConfig {
   videoModel: string
 }
 
+export interface Integration {
+  id: string
+  name: string
+  platform: string
+  category: 'ai' | 'social' | 'email' | 'analytics' | 'crm' | 'ads' | 'storage' | 'other'
+  apiKey: string
+  apiUrl: string
+  enabled: boolean
+  config: Record<string, string>
+  connectedAt: string
+  lastVerified: string
+  status: 'connected' | 'disconnected' | 'error'
+  icon: string
+}
+
+export interface AgencySettings {
+  agencyName: string
+  agencyTagline: string
+  defaultTimezone: string
+  currency: string
+  dateFormat: string
+  weekStartDay: number
+  enableDarkByDefault: boolean
+  enableAutoBackup: boolean
+  backupIntervalHours: number
+}
+
 // ─── Agent Configuration from blueprint ───────────────────────────────
 
 export const AGENT_DEFINITIONS: Omit<Agent, 'id' | 'status' | 'utilization' | 'lastActive'>[] = [

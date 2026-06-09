@@ -6,7 +6,7 @@ import {
   Megaphone, Search, Mail, Camera, Palette, GitBranch,
   Receipt, ScrollText, HeartPulse, FileBarChart,
   Rocket, Speech, Shield, CalendarCheck, CheckCircle,
-  PhoneCall, Compass, AlertTriangle, Sparkles, Share2,
+  PhoneCall, Compass, AlertTriangle, Sparkles, Share2, Settings,
   ChevronDown, ChevronRight
 } from 'lucide-react'
 
@@ -91,6 +91,12 @@ const categories: Category[] = [
     items: [
       { id: 'ai-content', label: 'AI Content Studio', icon: <Sparkles size={18} /> },
       { id: 'social-publisher', label: 'Social Publisher', icon: <Share2 size={18} /> },
+    ],
+  },
+  {
+    label: 'SYSTEM',
+    items: [
+      { id: 'settings', label: 'Settings', icon: <Settings size={18} /> },
     ],
   },
 ]

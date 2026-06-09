@@ -33,6 +33,7 @@ import MarketResearcherPage from './components/MarketResearcherPage'
 import ScopeCreepPage from './components/ScopeCreepPage'
 import AiContentStudio from './components/AiContentStudio'
 import SocialPublisher from './components/SocialPublisher'
+import SettingsPage from './components/SettingsPage'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -67,6 +68,7 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   'scope-creep': { title: 'Scope Creep Recovery', component: <ScopeCreepPage /> },
   'ai-content': { title: 'AI Content Studio', component: <AiContentStudio /> },
   'social-publisher': { title: 'Social Publisher', component: <SocialPublisher /> },
+  settings: { title: 'Settings', component: <SettingsPage /> },
 }
 
 export default function App() {

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig } from '../types'
+import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings } from '../types'
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
@@ -37,6 +37,8 @@ export interface AppState {
   aiJobs: AiGenerationJob[]
   socialQueue: SocialQueueItem[]
   apiConfig: ApiConfig
+  integrations: Integration[]
+  settings: AgencySettings
   loading: boolean
 
   toggleDark: () => void
@@ -87,6 +89,10 @@ export interface AppState {
   addSocialQueueItem: (q: Omit<SocialQueueItem, 'id'>) => void
   updateSocialQueueItem: (id: string, data: Partial<SocialQueueItem>) => void
   updateApiConfig: (c: Partial<ApiConfig>) => void
+  addIntegration: (i: Omit<Integration, 'id' | 'connectedAt' | 'lastVerified'>) => void
+  updateIntegration: (id: string, data: Partial<Integration>) => void
+  removeIntegration: (id: string) => void
+  updateSettings: (s: Partial<AgencySettings>) => void
 
   exportData: () => string
   importData: (json: string) => void
@@ -281,6 +287,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   aiJobs: [],
   socialQueue: [],
   apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
+  integrations: [],
+  settings: { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
   weeklyNotes: [],
   loading: false,
 
@@ -333,10 +341,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   addSocialQueueItem: (q) => set(s => ({ socialQueue: [...s.socialQueue, { id: uid(), ...q }] })),
   updateSocialQueueItem: (id, data) => set(s => ({ socialQueue: s.socialQueue.map(q => q.id === id ? { ...q, ...data } : q) })),
   updateApiConfig: (c) => set(s => ({ apiConfig: { ...s.apiConfig, ...c } })),
+  addIntegration: (i) => set(s => ({ integrations: [...s.integrations, { id: uid(), connectedAt: new Date().toISOString(), lastVerified: '', ...i }] })),
+  updateIntegration: (id, data) => set(s => ({ integrations: s.integrations.map(i => i.id === id ? { ...i, ...data } : i) })),
+  removeIntegration: (id) => set(s => ({ integrations: s.integrations.filter(i => i.id !== id) })),
+  updateSettings: (s) => set(s => ({ settings: { ...s.settings, ...s } })),
 
   exportData: () => {
-    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig } = get()
-    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, exportedAt: new Date().toISOString() }, null, 2)
+    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings } = get()
+    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, exportedAt: new Date().toISOString() }, null, 2)
   },
 
   importData: (json) => {
@@ -366,6 +378,8 @@ export const useAppStore = create<AppState>((set, get) => ({
         aiJobs: data.aiJobs || [],
         socialQueue: data.socialQueue || [],
         apiConfig: data.apiConfig || { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
+        integrations: data.integrations || [],
+        settings: data.settings || { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
       })
     } catch { alert('Invalid import data') }
   },
@@ -394,5 +408,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     aiJobs: [],
     socialQueue: [],
     apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
+    integrations: [],
+    settings: { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
   }),
 }))
