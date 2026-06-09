@@ -366,9 +366,9 @@ export default function ClientPortalView() {
                       color: c.status === 'published' ? '#22c55e' : c.status === 'review' ? '#eab308' : muted,
                     }}>{c.status}</span>
                   </div>
-                  <div style={{ fontSize: 12, color: muted, marginTop: 4 }}>{c.contentType} · {new Date(c.createdAt).toLocaleDateString()}</div>
+                  <div style={{ fontSize: 12, color: muted, marginTop: 4 }}>{c.type} · {new Date(c.dueDate).toLocaleDateString()}</div>
                   <div style={{ fontSize: 12, marginTop: 6, lineHeight: 1.4, color: text, opacity: 0.9 }}>
-                    {c.content.substring(0, 120)}...
+                    {c.title}
                   </div>
                 </div>
               ))}
