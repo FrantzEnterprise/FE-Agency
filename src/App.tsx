@@ -36,7 +36,6 @@ import SocialPublisher from './components/SocialPublisher'
 import SettingsPage from './components/SettingsPage'
 import ClientPortalPage from './components/ClientPortalPage'
 import ClientPortalView from './components/ClientPortalView'
-import ReviewMonitoringPage from './components/ReviewMonitoringPage'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket, ExternalLink } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -73,7 +72,6 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   'social-publisher': { title: 'Social Publisher', component: <SocialPublisher /> },
   settings: { title: 'Settings', component: <SettingsPage /> },
   'client-portal': { title: 'Client Portal', component: <ClientPortalPage /> },
-  'review-monitoring': { title: 'Review Monitoring', component: <ReviewMonitoringPage /> },
 }
 
 export default function App() {
