@@ -96,7 +96,7 @@ const categories: Category[] = [
   {
     label: 'SYSTEM',
     items: [
-      { id: 'client-portal', label: 'Client Portal', icon: <ExternalLink size={18} /> },
+      { id: 'client-portal', label: 'Client Portal', icon: <Link size={18} /> },
       { id: 'settings', label: 'Settings', icon: <Settings size={18} /> },
     ],
   },

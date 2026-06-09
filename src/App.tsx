@@ -36,7 +36,7 @@ import SocialPublisher from './components/SocialPublisher'
 import SettingsPage from './components/SettingsPage'
 import ClientPortalPage from './components/ClientPortalPage'
 import ClientPortalView from './components/ClientPortalView'
-import { Sun, Moon, Download, Upload, RotateCcw, Rocket, ExternalLink } from 'lucide-react'
+import { Sun, Moon, Download, Upload, RotateCcw, Rocket, Link } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
   dashboard: { title: 'Dashboard', component: <Dashboard /> },
