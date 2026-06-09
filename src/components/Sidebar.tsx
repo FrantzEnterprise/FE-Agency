@@ -7,7 +7,7 @@ import {
   Receipt, ScrollText, HeartPulse, FileBarChart,
   Rocket, Speech, Shield, CalendarCheck, CheckCircle,
   PhoneCall, Compass, AlertTriangle, Sparkles, Share2, Settings,
-  ChevronDown, ChevronRight
+  ChevronDown, ChevronRight, Link
 } from 'lucide-react'
 
 interface NavItem {
