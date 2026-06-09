@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, Component, ReactNode } from 'react'
 import { useAppStore } from './store/useAppStore'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
@@ -74,6 +74,22 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   'client-portal': { title: 'Client Portal', component: <ClientPortalPage /> },
 }
 
+class ErrorBoundary extends Component<{children: ReactNode}, {error: Error | null}> {
+  state = { error: null }
+  static getDerivedStateFromError(error: Error) { return { error } }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{padding:40,background:'#1a1a2e',color:'#ff4444',minHeight:'100vh',fontFamily:'monospace'}}>
+          <h2 style={{marginBottom:16}}>🚨 Runtime Error</h2>
+          <pre style={{whiteSpace:'pre-wrap',color:'#e0e0e0'}}>{this.state.error.stack || this.state.error.message}</pre>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 export default function App() {
   const dark = useAppStore(s => s.dark)
   const toggleDark = useAppStore(s => s.toggleDark)
@@ -121,6 +137,7 @@ export default function App() {
   console.log('[App] rendering with', activeModule)
 
   return (
+    <ErrorBoundary>
     <div style={{ height: '100%' }}>
       <div className="app-layout">
         <Sidebar />
@@ -149,5 +166,6 @@ export default function App() {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   )
 }

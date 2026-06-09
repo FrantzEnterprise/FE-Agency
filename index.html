@@ -28,7 +28,7 @@
           setTimeout(function() {
             var fb = document.getElementById('loading-fallback');
             var root = document.getElementById('root');
-            if (fb && root && root.children.length < 2) {
+            if (fb && root && root.children.length === 0) {
               sl.textContent = 'App did not mount after ' + ((Date.now()-start)/1000).toFixed(0) + 's. Check if JS errored above.';
             } else if (fb) {
               fb.style.display = 'none';
