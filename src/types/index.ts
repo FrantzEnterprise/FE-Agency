@@ -308,6 +308,23 @@ export interface AgencySettings {
   backupIntervalHours: number
 }
 
+export interface ReviewEntry {
+  id: string
+  clientId: string
+  platform: 'google_business' | 'yelp' | 'facebook' | 'amazon' | 'linkedin' | 'g2' | 'capterra' | 'trustpilot' | 'manual'
+  reviewerName: string
+  rating: number
+  title: string
+  content: string
+  response: string
+  respondedAt: string
+  url: string
+  status: 'new' | 'reviewed' | 'responded' | 'flagged'
+  publishedAt: string
+  detectedAt: string
+  sentiment: 'positive' | 'neutral' | 'negative'
+}
+
 export interface PortalInvite {
   id: string
   clientId: string

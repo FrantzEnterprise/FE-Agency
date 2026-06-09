@@ -7,7 +7,7 @@ import {
   Receipt, ScrollText, HeartPulse, FileBarChart,
   Rocket, Speech, Shield, CalendarCheck, CheckCircle,
   PhoneCall, Compass, AlertTriangle, Sparkles, Share2, Settings,
-  ChevronDown, ChevronRight
+  ChevronDown, ChevronRight, Star
 } from 'lucide-react'
 
 interface NavItem {
@@ -75,6 +75,7 @@ const categories: Category[] = [
       { id: 'email', label: 'Email/Lifecycle', icon: <Mail size={18} /> },
       { id: 'social', label: 'Social Media', icon: <MessageSquare size={18} /> },
       { id: 'content', label: 'Content Studio', icon: <Camera size={18} /> },
+      { id: 'review-monitoring', label: 'Review Monitoring', icon: <Star size={18} /> },
     ],
   },
   {
