@@ -120,6 +120,8 @@ export default function App() {
     return <ClientPortalView />
   }
 
+  console.log('[App] rendering with', activeModule)
+
   return (
     <div style={{ height: '100%' }}>
       <div className="app-layout">
