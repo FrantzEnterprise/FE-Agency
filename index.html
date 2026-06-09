@@ -10,7 +10,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
+    <div id="loading-fallback" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a2e;color:#e0e0e0;font-family:sans-serif;flex-direction:column;padding:20px">
+      <h1 style="margin-bottom:16px">Loading Frantz Enterprise...</h1>
+      <p style="color:#888" id="status-line">Starting...</p>
+    </div>
     <div id="root"></div>
+    <script>
+      (function(){
+        var sl = document.getElementById('status-line');
+        sl.textContent = 'Script loaded';
+        var start = Date.now();
+        window.addEventListener('error', function(e) {
+          sl.textContent = 'ERROR: ' + (e.message || e.error?.message || 'unknown');
+          sl.style.color = '#ff4444';
+        });
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            var fb = document.getElementById('loading-fallback');
+            var root = document.getElementById('root');
+            if (fb && root && root.children.length < 2) {
+              sl.textContent = 'App did not mount after ' + ((Date.now()-start)/1000).toFixed(0) + 's. Check if JS errored above.';
+            } else if (fb) {
+              fb.style.display = 'none';
+            }
+          }, 5000);
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
