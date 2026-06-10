@@ -103,6 +103,8 @@ export interface AppState {
   updateSocialPost: (id: string, data: Partial<SocialPost>) => void
   addContentPiece: (c: Omit<ContentPiece, 'id'>) => void
   updateContentPiece: (id: string, data: Partial<ContentPiece>) => void
+  deleteContentPiece: (id: string) => void
+  updateContentPiece: (id: string, data: Partial<ContentPiece>) => void
   addPitchDeal: (d: Omit<PitchDeal, 'id' | 'createdAt'>) => void
   updatePitchDeal: (id: string, data: Partial<PitchDeal>) => void
   addDiscoveryCall: (d: Omit<DiscoveryCall, 'id'>) => void
@@ -254,12 +256,14 @@ const sampleSocialPosts: SocialPost[] = [
 ]
 
 const sampleContentPieces: ContentPiece[] = [
-  { id: uid(), clientId: sampleClients[0].id, type: 'blog', title: '10 Signs You Need a Dental Check-Up', status: 'published', assignee: 'copywriter', dueDate: daysAgo(7), publishedAt: daysAgo(5), url: '/blog/dental-checkup-signs' },
-  { id: uid(), clientId: sampleClients[0].id, type: 'video', title: 'Dental Implant Procedure Walkthrough', status: 'editing', assignee: 'video-editor', dueDate: daysFromNow(7), publishedAt: '', url: '' },
-  { id: uid(), clientId: sampleClients[1].id, type: 'blog', title: 'How to Choose a Roofing Contractor', status: 'published', assignee: 'copywriter', dueDate: daysAgo(14), publishedAt: daysAgo(12), url: '/blog/choose-roofing-contractor' },
-  { id: uid(), clientId: sampleClients[1].id, type: 'infographic', title: 'Roof Materials Comparison Guide', status: 'production', assignee: 'brand-designer', dueDate: daysFromNow(14), publishedAt: '', url: '' },
-  { id: uid(), clientId: sampleClients[4].id, type: 'case_study', title: 'Fleet Maintenance Cost Reduction Case Study', status: 'brief', assignee: 'strategist', dueDate: daysFromNow(21), publishedAt: '', url: '' },
-  { id: uid(), clientId: sampleClients[3].id, type: 'social_asset', title: 'Luxury Home Buyer Guide Carousel', status: 'production', assignee: 'brand-designer', dueDate: daysFromNow(5), publishedAt: '', url: '' },
+  { id: uid(), clientId: sampleClients[0].id, type: 'blog_post', title: '10 Signs You Need a Dental Check-Up', status: 'published', assignee: 'copywriter', dueDate: daysAgo(7), publishedAt: daysAgo(5), url: '/blog/dental-checkup-signs', outline: 'Intro, Sign 1-10, Conclusion', body: 'Lorem ipsum...', seoKeywords: ['dental checkup', 'dentist near me'], wordCount: 1200, tone: 'educational', targetAudience: 'Adults 25-55', scheduledAt: '', socialPost: 'Wondering if its time for a dental checkup. Here are 10 signs you should not ignore. 🦷', generatedWithAi: true },
+    { id: uid(), clientId: sampleClients[0].id, type: 'video', title: 'Dental Implant Procedure Walkthrough', status: 'editing', assignee: 'video-editor', dueDate: daysFromNow(7), publishedAt: '', url: '', outline: '', body: '', seoKeywords: ['dental implants', 'implant procedure'], wordCount: 0, tone: 'educational', targetAudience: 'Adults 40-65', scheduledAt: daysFromNow(10), socialPost: 'See exactly how dental implants work from start to finish. 🎬', generatedWithAi: false },
+    { id: uid(), clientId: sampleClients[1].id, type: 'blog_post', title: 'How to Choose a Roofing Contractor', status: 'published', assignee: 'copywriter', dueDate: daysAgo(14), publishedAt: daysAgo(12), url: '/blog/choose-roofing-contractor', outline: '', body: '', seoKeywords: ['roofing contractor', 'roof repair'], wordCount: 1500, tone: 'professional', targetAudience: 'Homeowners 35-65', scheduledAt: '', socialPost: 'Dont hire a roofer without reading this guide first. 🏠', generatedWithAi: true },
+    { id: uid(), clientId: sampleClients[1].id, type: 'infographic', title: 'Roof Materials Comparison Guide', status: 'production', assignee: 'brand-designer', dueDate: daysFromNow(14), publishedAt: '', url: '', outline: '', body: '', seoKeywords: ['roof materials', 'shingles vs metal'], wordCount: 0, tone: 'educational', targetAudience: 'Homeowners', scheduledAt: '', socialPost: 'Which roof material is right for you. Here is the breakdown. 📊', generatedWithAi: false },
+    { id: uid(), clientId: sampleClients[4].id, type: 'case_study', title: 'Fleet Maintenance Cost Reduction Case Study', status: 'brief', assignee: 'strategist', dueDate: daysFromNow(21), publishedAt: '', url: '', outline: 'Executive Summary, Challenge, Solution, Results', body: 'Draft needed...', seoKeywords: ['fleet maintenance', 'cost reduction'], wordCount: 0, tone: 'professional', targetAudience: 'Fleet managers', scheduledAt: '', socialPost: 'How one fleet saved 32% on maintenance costs. 🚛', generatedWithAi: false },
+    { id: uid(), clientId: sampleClients[3].id, type: 'social_asset', title: 'Luxury Home Buyer Guide Carousel', status: 'production', assignee: 'brand-designer', dueDate: daysFromNow(5), publishedAt: '', url: '', outline: '', body: '', seoKeywords: ['luxury real estate', 'home buying guide'], wordCount: 0, tone: 'persuasive', targetAudience: 'High-net-worth buyers', scheduledAt: daysFromNow(6), socialPost: 'Thinking about buying a luxury home. Here is what you need to know. 🏡✨', generatedWithAi: false },
+    { id: uid(), clientId: sampleClients[2].id, type: 'podcast', title: 'Real Estate Market Trends 2026', status: 'brief', assignee: 'brian', dueDate: daysFromNow(10), publishedAt: '', url: '', outline: 'Intro, Market overview, Regional trends, Q&A', body: '', seoKeywords: ['real estate trends', '2026 housing market'], wordCount: 0, tone: 'conversational', targetAudience: 'Real estate professionals', scheduledAt: '', socialPost: 'Tune in to our latest podcast on 2026 real estate trends! 🎙️', generatedWithAi: false },
+    { id: uid(), clientId: sampleClients[0].id, type: 'landing_page', title: 'BrightPath Dental Free Consultation', status: 'review', assignee: 'copywriter', dueDate: daysFromNow(3), publishedAt: '', url: '', outline: 'Hero, Benefits, Testimonials, CTA', body: 'Book your free consultation today...', seoKeywords: ['free dental consultation', 'BrightPath Dental'], wordCount: 400, tone: 'persuasive', targetAudience: 'New dental patients', scheduledAt: '', socialPost: 'New patients: get a free consultation at BrightPath Dental! 🦷', generatedWithAi: true },
 ]
 
 const samplePitchDeals: PitchDeal[] = [
@@ -478,6 +482,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   addSocialPost: (p) => set(s => ({ socialPosts: [...s.socialPosts, { id: uid(), postedAt: '', likes: 0, comments: 0, shares: 0, impressions: 0, ...p }] })),
   updateSocialPost: (id, data) => set(s => ({ socialPosts: s.socialPosts.map(p => p.id === id ? { ...p, ...data } : p) })),
   addContentPiece: (c) => set(s => ({ contentPieces: [...s.contentPieces, { id: uid(), ...c }] })),
+  updateContentPiece: (id, data) => set(s => ({ contentPieces: s.contentPieces.map(p => p.id === id ? { ...p, ...data } : p) })),
+  deleteContentPiece: (id) => set(s => ({ contentPieces: s.contentPieces.filter(p => p.id !== id) })),
   updateContentPiece: (id, data) => set(s => ({ contentPieces: s.contentPieces.map(c => c.id === id ? { ...c, ...data } : c) })),
   addPitchDeal: (d) => set(s => ({ pitchDeals: [...s.pitchDeals, { id: uid(), createdAt: new Date().toISOString(), ...d }] })),
   updatePitchDeal: (id, data) => set(s => ({ pitchDeals: s.pitchDeals.map(d => d.id === id ? { ...d, ...data } : d) })),

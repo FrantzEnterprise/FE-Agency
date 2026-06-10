@@ -336,13 +336,23 @@ export interface SocialPost {
 export interface ContentPiece {
   id: string
   clientId: string
-  type: 'blog' | 'video' | 'infographic' | 'whitepaper' | 'case_study' | 'social_asset'
+  type: 'blog_post' | 'video' | 'infographic' | 'whitepaper' | 'case_study' | 'social_asset' | 'podcast' | 'landing_page'
   title: string
-  status: 'brief' | 'script' | 'production' | 'editing' | 'review' | 'published'
+  status: 'brief' | 'production' | 'editing' | 'review' | 'published'
   assignee: string
   dueDate: string
   publishedAt: string
   url: string
+  // AI Writer fields
+  outline: string
+  body: string
+  seoKeywords: string[]
+  wordCount: number
+  tone: 'professional' | 'conversational' | 'persuasive' | 'educational' | 'humorous'
+  targetAudience: string
+  scheduledAt: string
+  socialPost: string
+  generatedWithAi: boolean
 }
 
 export interface PitchDeal {
