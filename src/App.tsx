@@ -74,7 +74,7 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   'discovery-call': { title: 'Discovery Call Orchestrator', component: <DiscoveryCallPage /> },
   'market-research': { title: 'Market Researcher', component: <MarketResearcherPage /> },
   'scope-creep': { title: 'Scope Creep Recovery', component: <ScopeCreepPage /> },
-  'ai-content': { title: 'AI Content Studio', component: <AiContentStudio /> },
+  'ai-content': { title: 'AI Content Studio', component: <ContentStudioPage /> },
   'social-publisher': { title: 'Social Publisher', component: <SocialPublisher /> },
   settings: { title: 'Settings', component: <SettingsPage /> },
   'client-portal': { title: 'Client Portal', component: <ClientPortalPage /> },
