@@ -40,13 +40,13 @@ export default function PitchEnginePage() {
     for (const d of pitchDeals) {
       if (!c[d.stage]) c[d.stage] = { count: 0, value: 0 }
       c[d.stage].count++
-      c[d.stage].value += d.value
+      c[d.stage].value += d.estimatedMRR
     }
     return c
   }, [pitchDeals])
 
-  const totalPipeline = useMemo(() => pitchDeals.filter(d => d.stage !== 'closed_lost' && d.stage !== 'closed_won').reduce((s, d) => s + d.value, 0), [pitchDeals])
-  const totalWon = useMemo(() => pitchDeals.filter(d => d.stage === 'closed_won').reduce((s, d) => s + d.value, 0), [pitchDeals])
+  const totalPipeline = useMemo(() => pitchDeals.filter(d => d.stage !== 'closed_lost' && d.stage !== 'closed_won').reduce((s, d) => s + d.estimatedMRR, 0), [pitchDeals])
+  const totalWon = useMemo(() => pitchDeals.filter(d => d.stage === 'closed_won').reduce((s, d) => s + d.estimatedMRR, 0), [pitchDeals])
 
   const handleAdd = () => {
     if (!form.clientId || !form.name) return
@@ -54,7 +54,7 @@ export default function PitchEnginePage() {
       clientId: form.clientId,
       name: form.name,
       stage: form.stage as any,
-      value: form.value || 0,
+      value: form.estimatedMRR || 0,
       notes: form.notes || '',
       date: new Date().toISOString(),
     })
@@ -83,11 +83,11 @@ export default function PitchEnginePage() {
       <div style={{ display: 'flex', gap: 14, marginBottom: 16, flexWrap: 'wrap' }}>
         <div className="card" style={{ padding: 14, flex: '1 1 200px' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Active Pipeline</div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--brand-500)' }}>${totalPipeline.toLocaleString()}</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--brand-500)' }}>${(totalPipeline || 0).toLocaleString()}</div>
         </div>
         <div className="card" style={{ padding: 14, flex: '1 1 200px' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Closed Won (total)</div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--success-500)' }}>${totalWon.toLocaleString()}</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--success-500)' }}>${(totalWon || 0).toLocaleString()}</div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{pitchDeals.filter(d => d.stage === 'closed_won').length} deals</div>
         </div>
         <div className="card" style={{ padding: 14, flex: '1 1 200px' }}>
@@ -112,7 +112,7 @@ export default function PitchEnginePage() {
             <div key={s} className="card" style={{ textAlign: 'center', padding: 10, borderTop: `3px solid ${STAGE_COLORS[s]}` }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: STAGE_COLORS[s] }}>{st?.count || 0}</div>
               <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 2 }}>{STAGE_LABELS[s]}</div>
-              {st?.value ? <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>${st.value.toLocaleString()}</div> : null}
+              {st?.estimatedMRR ? <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>${(st.estimatedMRR || 0).toLocaleString()}</div> : null}
             </div>
           )
         })}
@@ -157,7 +157,7 @@ export default function PitchEnginePage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 700 }}>{deal.name}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{client?.name} · ${deal.value.toLocaleString()}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{client?.name} · ${(deal.estimatedMRR || 0).toLocaleString()}</div>
               </div>
               <div style={{ textAlign: 'right', minWidth: 100 }}>
                 <span className="tag" style={{ background: `${STAGE_COLORS[deal.stage]}20`, color: STAGE_COLORS[deal.stage], fontSize: 10 }}>
