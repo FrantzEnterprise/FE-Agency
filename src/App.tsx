@@ -1,4 +1,4 @@
-import { useEffect, Component, ReactNode } from 'react'
+import { useEffect, useState, Component, ReactNode } from 'react'
 import { useAppStore } from './store/useAppStore'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
@@ -36,7 +36,7 @@ import SocialPublisher from './components/SocialPublisher'
 import SettingsPage from './components/SettingsPage'
 import ClientPortalPage from './components/ClientPortalPage'
 import ClientPortalView from './components/ClientPortalView'
-import { Sun, Moon, Download, Upload, RotateCcw, Rocket, Link } from 'lucide-react'
+import { Sun, Moon, Download, Upload, RotateCcw, Rocket, Link, Menu, X } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
   dashboard: { title: 'Dashboard', component: <Dashboard /> },
@@ -97,8 +97,9 @@ export default function App() {
   const exportData = useAppStore(s => s.exportData)
   const importData = useAppStore(s => s.importData)
   const resetData = useAppStore(s => s.resetData)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Sync dark mode to <html> so CSS variable lookups on body and descendants resolve correctly
+  // Sync dark mode to <html>
   useEffect(() => {
     if (dark) {
       document.documentElement.classList.add('dark')
@@ -106,6 +107,20 @@ export default function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [dark])
+
+  // Prevent body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.classList.add('sidebar-open')
+    } else {
+      document.body.classList.remove('sidebar-open')
+    }
+  }, [sidebarOpen])
+
+  // Close sidebar on route change (module change) on mobile
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [activeModule])
 
   const handleExport = () => {
     const json = exportData()
@@ -140,19 +155,36 @@ export default function App() {
     <ErrorBoundary>
     <div style={{ height: '100%' }}>
       <div className="app-layout">
-        <Sidebar />
-        <div className="main-area">
+        {/* Mobile hamburger button */}
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+        >
+          {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+
+        {/* Mobile overlay backdrop */}
+        {sidebarOpen && (
+          <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+        )}
+
+        <div className={`sidebar-wrapper ${sidebarOpen ? 'open' : ''}`}>
+          <Sidebar onNavigate={() => setSidebarOpen(false)} />
+        </div>
+
+        <div className={`main-area ${sidebarOpen ? 'sidebar-open' : ''}`}>
           <header className="topbar">
             <div className="topbar-title">{currentModule.title}</div>
             <div className="topbar-actions">
-              <button className="btn btn-ghost btn-sm" onClick={handleExport} title="Export data">
-                <Download size={16} /> Export
+              <button className="btn btn-ghost btn-sm no-label-mobile" onClick={handleExport} title="Export data">
+                <Download size={16} /> <span className="btn-label">Export</span>
               </button>
-              <button className="btn btn-ghost btn-sm" onClick={handleImport} title="Import data">
-                <Upload size={16} /> Import
+              <button className="btn btn-ghost btn-sm no-label-mobile" onClick={handleImport} title="Import data">
+                <Upload size={16} /> <span className="btn-label">Import</span>
               </button>
-              <button className="btn btn-ghost btn-sm" onClick={resetData} title="Reset to sample data">
-                <RotateCcw size={16} /> Reset
+              <button className="btn btn-ghost btn-sm no-label-mobile" onClick={resetData} title="Reset to sample data">
+                <RotateCcw size={16} /> <span className="btn-label">Reset</span>
               </button>
               <button className="btn btn-ghost btn-icon" onClick={toggleDark} title={dark ? 'Light mode' : 'Dark mode'}>
                 {dark ? <Sun size={18} /> : <Moon size={18} />}

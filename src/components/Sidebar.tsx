@@ -109,7 +109,7 @@ function useActiveCategory(activeModule: string, cats: Category[]): string | nul
   return null
 }
 
-export default function Sidebar() {
+export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const activeModule = useAppStore(s => s.activeModule)
   const setActiveModule = useAppStore(s => s.setActiveModule)
   const initialCat = useActiveCategory(activeModule, categories) || 'OVERVIEW'
@@ -162,7 +162,10 @@ export default function Sidebar() {
                     <button
                       key={item.id}
                       className={`sidebar-link ${activeModule === item.id ? 'active' : ''}`}
-                      onClick={() => setActiveModule(item.id)}
+                      onClick={() => {
+                        setActiveModule(item.id)
+                        onNavigate?.()
+                      }}
                     >
                       {item.icon}
                       {item.label}
