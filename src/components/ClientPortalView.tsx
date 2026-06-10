@@ -4,7 +4,7 @@ import { useAppStore } from '../store/useAppStore'
 type Tab = 'dashboard' | 'messages' | 'approvals' | 'deliverables' | 'invoices'
 
 export default function ClientPortalView() {
-  const { portalInvites, clients, clientApprovals, clientMessages, projects, tasks, contentPieces, socialPosts, creativeAssets, campaigns, invoices, payments, addClientMessage, updateClientMessage } = useAppStore()
+  const { portalInvites, clients, clientApprovals, clientMessages, projects, tasks, contentPieces, socialPosts, creativeAssets, campaigns, invoices, payments, addClientMessage, updateClientMessage, setActiveModule } = useAppStore()
   const [params, setParams] = useState<{ portal: string }>({ portal: '' })
   const [tab, setTab] = useState<Tab>('dashboard')
   const [msgText, setMsgText] = useState('')
@@ -122,6 +122,17 @@ export default function ClientPortalView() {
           </div>
           <button onClick={() => setDark(!dark)} className="btn btn-ghost btn-sm" style={{ fontSize: 16 }}>
             {dark ? '☀️' : '🌙'}
+          </button>
+          <button onClick={() => {
+            const url = new URL(window.location.href)
+            url.searchParams.delete('portal')
+            window.history.replaceState({}, '', url.pathname + url.search)
+            setActiveModule('dashboard')
+          }} style={{
+            padding: '6px 12px', borderRadius: 6, border: '1px solid #334155',
+            background: 'transparent', color: '#94a3b8', fontSize: 12, cursor: 'pointer',
+          }}>
+            ← Agency Dashboard
           </button>
         </div>
       </div>

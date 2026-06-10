@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import {
   LayoutDashboard, Users, Target, Briefcase, BarChart3, TrendingUp,
@@ -134,9 +134,11 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
   // Auto-open the category of the active module
   const activeCat = useActiveCategory(activeModule, categories)
-  if (activeCat && !openCats.has(activeCat)) {
-    setOpenCats(prev => new Set([...prev, activeCat]))
-  }
+  useEffect(() => {
+    if (activeCat && !openCats.has(activeCat)) {
+      setOpenCats(prev => new Set([...prev, activeCat]))
+    }
+  }, [activeCat])
 
   return (
     <nav className="sidebar">
