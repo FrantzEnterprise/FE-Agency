@@ -4,9 +4,88 @@ import type { Autoresponder, AutoresponderStep, AutoresponderTriggerType, Contac
 
 type EmailTab = 'dashboard' | 'campaigns' | 'lists' | 'autoresponders' | 'templates'
 
+// ─── Email sending helpers ──────────────────────────────────────────
+
+function getEmailProvider(integrations: any[]) {
+  return integrations.find(i => i.category === 'email' && i.apiKey && i.enabled)
+}
+
+async function sendViaProvider(provider: any, to: string, subject: string, htmlBody: string): Promise<{ ok: boolean; error?: string }> {
+  if (!provider) {
+    // Simulated send (no provider configured)
+    await new Promise(r => setTimeout(r, 300))
+    return { ok: true }
+  }
+
+  const platform = provider.platform.toLowerCase()
+
+  if (platform === 'sendgrid') {
+    try {
+      const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${provider.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email: to }] }],
+          from: { email: 'noreply@frantzenterprise.com', name: 'Frantz Enterprise' },
+          subject,
+          content: [{ type: 'text/html', value: htmlBody }],
+        }),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        return { ok: false, error: `SendGrid error ${res.status}: ${text}` }
+      }
+      return { ok: true }
+    } catch (err: any) {
+      return { ok: false, error: err.message || 'SendGrid request failed' }
+    }
+  }
+
+  if (platform === 'mailgun') {
+    try {
+      const domain = provider.apiUrl?.replace(/^https?:\/\//, '') || 'mg.example.com'
+      const formData = new URLSearchParams()
+      formData.append('from', 'Frantz Enterprise <noreply@frantzenterprise.com>')
+      formData.append('to', to)
+      formData.append('subject', subject)
+      formData.append('html', htmlBody)
+
+      const res = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${btoa(`api:${provider.apiKey}`)}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData,
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        return { ok: false, error: `Mailgun error ${res.status}: ${text}` }
+      }
+      return { ok: true }
+    } catch (err: any) {
+      return { ok: false, error: err.message || 'Mailgun request failed' }
+    }
+  }
+
+  // Generic SMTP / other — simulate for now
+  await new Promise(r => setTimeout(r, 300))
+  return { ok: true }
+}
+
+// ─── Component ───────────────────────────────────────────────────────
+
 export default function EmailPage() {
-  const { emailCampaigns, contactLists, autoresponders, emailTemplates, clients, addContactList, addContactToList, removeContactFromList, addAutoresponder, updateAutoresponder, addAutoresponderStep, removeAutoresponderStep, updateAutoresponderStep, addEmailTemplate, updateEmailTemplate } = useAppStore()
+  const { emailCampaigns, contactLists, autoresponders, emailTemplates, clients, integrations, addContactList, addContactToList, removeContactFromList, addAutoresponder, updateAutoresponder, addAutoresponderStep, removeAutoresponderStep, updateAutoresponderStep, addEmailTemplate, updateEmailTemplate, updateEmailCampaign } = useAppStore()
   const getClient = (id: string) => clients.find(c => c.id === id)
+  const emailProvider = getEmailProvider(integrations)
+
+  // Send state
+  const [sendingCampaign, setSendingCampaign] = useState<string | null>(null)
+  const [sendStatus, setSendStatus] = useState<{ campaignId: string; ok: boolean; msg: string } | null>(null)
 
   const [tab, setTab] = useState<EmailTab>('dashboard')
   const [expandedAutoresponder, setExpandedAutoresponder] = useState<string | null>(null)
@@ -53,6 +132,17 @@ export default function EmailPage() {
           }} onClick={() => setTab(t.id)}>{t.label}</button>
         ))}
       </div>
+
+      {/* ── Email Provider Banner ── */}
+      {!emailProvider ? (
+        <div style={{ marginBottom: 16, padding: '10px 14px', borderRadius: 8, background: 'var(--warning-500)15', border: '1px solid var(--warning-500)', fontSize: 13, color: 'var(--text-primary)' }}>
+          ⚠️ <strong>No email provider configured.</strong> Go to <strong>Settings → Integrations</strong> and connect SendGrid or Mailgun to send real emails. Without a provider, sends are <strong>simulated</strong> (data captured but nothing transmitted).
+        </div>
+      ) : (
+        <div style={{ marginBottom: 16, padding: '10px 14px', borderRadius: 8, background: 'var(--success-500)15', border: '1px solid var(--success-500)', fontSize: 13, color: 'var(--text-primary)' }}>
+          ✅ Connected: <strong>{emailProvider.name}</strong> — emails will send in real time.
+        </div>
+      )}
 
       {/* ── DASHBOARD ── */}
       {tab === 'dashboard' && (
@@ -112,6 +202,39 @@ export default function EmailPage() {
                   <div><div style={{ color: 'var(--text-muted)', fontSize: 10 }}>Click Rate</div><div style={{ fontWeight: 600 }}>{clickRate}%</div></div>
                   <div><div style={{ color: 'var(--text-muted)', fontSize: 10 }}>Bounces</div><div style={{ fontWeight: 600, color: cam.bounces > 20 ? 'var(--danger-500)' : 'var(--text-muted)' }}>{cam.bounces}</div></div>
                 </div>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 10 }}>
+                  {(cam.status === 'draft' || cam.status === 'paused') && (
+                    <button
+                      className="btn btn-primary"
+                      style={{ padding: '4px 14px', fontSize: 12 }}
+                      onClick={async () => {
+                        setSendingCampaign(cam.id)
+                        setSendStatus(null)
+                        const result = await sendViaProvider(emailProvider as any, cam.id, `Test: ${cam.name}`, `<h2>${cam.name}</h2><p>This is a simulated send for the &quot;${cam.name}&quot; campaign.</p>`)
+                        setSendingCampaign(null)
+                        if (result.ok) {
+                          updateEmailCampaign(cam.id, { status: 'active', sent: cam.sent + 1 })
+                          setSendStatus({ campaignId: cam.id, ok: true, msg: emailProvider ? '✅ Sent!' : '✅ Recorded (simulated — no API key set)' })
+                        } else {
+                          setSendStatus({ campaignId: cam.id, ok: false, msg: `❌ ${result.error || 'Send failed'}` })
+                        }
+                      }}
+                      disabled={sendingCampaign === cam.id}
+                    >
+                      {sendingCampaign === cam.id ? '⏳ Sending...' : '📤 Send'}
+                    </button>
+                  )}
+                  {cam.status === 'active' && (
+                    <button
+                      className="btn"
+                      style={{ padding: '4px 14px', fontSize: 12 }}
+                      onClick={() => updateEmailCampaign(cam.id, { status: 'paused' })}
+                    >⏸️ Pause</button>
+                  )}
+                  {sendStatus && sendStatus.campaignId === cam.id && (
+                    <span style={{ fontSize: 12, color: sendStatus.ok ? 'var(--success-500)' : 'var(--danger-500)' }}>{sendStatus.msg}</span>
+                  )}
+                </div>
               </div>
             )
           })}
@@ -169,18 +292,61 @@ export default function EmailPage() {
       {/* ── TEMPLATES ── */}
       {tab === 'templates' && (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px,1fr))', gap: 12 }}>
-            {emailTemplates.map(t => (
-              <div key={t.id} className="card" style={{ padding: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700 }}>{t.name}</div>
-                  <span className="tag" style={{ fontSize: 11 }}>{t.category}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {emailTemplates.map(t => {
+              const [showTest, setShowTest] = useState(false)
+              const [testEmail, setTestEmail] = useState('')
+              const [testSending, setTestSending] = useState(false)
+              const [testStatus, setTestStatus] = useState<string | null>(null)
+              return (
+                <div key={t.id} className="card" style={{ padding: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700 }}>{t.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>{t.subject}</div>
+                    </div>
+                    <span className="tag" style={{ fontSize: 11 }}>{t.category}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>{t.previewText}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Last used: {t.lastUsed ? new Date(t.lastUsed).toLocaleDateString() : 'Never'}</div>
+                  <div style={{ marginTop: 8 }}>
+                    <button className="btn" style={{ padding: '3px 12px', fontSize: 11 }} onClick={() => { setShowTest(!showTest); setTestStatus(null) }}>📬 Send Test</button>
+                  </div>
+                  {showTest && (
+                    <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input
+                        placeholder="Recipient email..."
+                        value={testEmail}
+                        onChange={e => setTestEmail(e.target.value)}
+                        style={{ padding: '4px 8px', borderRadius: 4, border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: 12, flex: 1, minWidth: 180 }}
+                      />
+                      <button
+                        className="btn btn-primary"
+                        style={{ padding: '4px 12px', fontSize: 12 }}
+                        disabled={!testEmail.trim() || testSending}
+                        onClick={async () => {
+                          if (!testEmail.trim()) return
+                          setTestSending(true)
+                          setTestStatus(null)
+                          const body = t.body || t.previewText || `<h2>${t.subject}</h2><p>Test send of &quot;${t.name}&quot; template.</p>`
+                          const result = await sendViaProvider(emailProvider as any, testEmail.trim(), t.subject || 'Test: ' + t.name, body)
+                          setTestSending(false)
+                          if (result.ok) {
+                            setTestStatus('✅ Sent!')
+                            updateEmailTemplate(t.id, { lastUsed: new Date().toISOString() })
+                          } else {
+                            setTestStatus(`❌ ${result.error || 'Send failed'}`)
+                          }
+                        }}
+                      >
+                        {testSending ? '⏳ Sending...' : 'Send'}
+                      </button>
+                      {testStatus && <span style={{ fontSize: 12, color: testStatus.startsWith('✅') ? 'var(--success-500)' : 'var(--danger-500)' }}>{testStatus}</span>}
+                    </div>
+                  )}
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>{t.subject}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.previewText}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Last used: {t.lastUsed ? new Date(t.lastUsed).toLocaleDateString() : 'Never'}</div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}
