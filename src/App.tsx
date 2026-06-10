@@ -37,6 +37,7 @@ import SettingsPage from './components/SettingsPage'
 import ClientPortalPage from './components/ClientPortalPage'
 import ClientPortalView from './components/ClientPortalView'
 import ToastContainer from './components/ToastContainer'
+import CommandPalette from './components/CommandPalette'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket, Link, Menu, X } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -198,6 +199,7 @@ export default function App() {
           </main>
 
           <ToastContainer />
+          <CommandPalette />
         </div>
       </div>
     </div>
