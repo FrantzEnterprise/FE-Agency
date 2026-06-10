@@ -35,6 +35,7 @@ import AiContentStudio from './components/AiContentStudio'
 import SocialPublisher from './components/SocialPublisher'
 import SettingsPage from './components/SettingsPage'
 import ClientPortalPage from './components/ClientPortalPage'
+import WebsiteBuilderPage from './components/WebsiteBuilderPage'
 import ClientPortalView from './components/ClientPortalView'
 import ToastContainer from './components/ToastContainer'
 import CommandPalette from './components/CommandPalette'
@@ -75,6 +76,7 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   'social-publisher': { title: 'Social Publisher', component: <SocialPublisher /> },
   settings: { title: 'Settings', component: <SettingsPage /> },
   'client-portal': { title: 'Client Portal', component: <ClientPortalPage /> },
+  'website-builder': { title: 'Website Builder', component: <WebsiteBuilderPage /> },
 }
 
 class ErrorBoundary extends Component<{children: ReactNode}, {error: Error | null}> {

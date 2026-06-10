@@ -18,6 +18,7 @@ const SAVE_KEYS: (keyof AppState)[] = [
   'marketIntel', 'scopeChanges', 'aiJobs', 'socialQueue',
   'apiConfig', 'integrations', 'settings',
   'portalInvites', 'clientApprovals', 'clientMessages',
+  'websites', 'websiteTemplates',
 ]
 
 /** Hydrate persisted data on first load */

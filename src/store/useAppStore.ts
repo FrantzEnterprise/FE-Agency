@@ -4,7 +4,7 @@ import { create } from 'zustand'
 const PERSIST_KEY = 'frantz…data'
 function clearPersistedData() { try { localStorage.removeItem(PERSIST_KEY) } catch {} }
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate } from '../types'
+import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate, Website, WebsiteTemplate } from '../types'
 import type { Toast, ToastType } from '../types/toast'
 import { createToast } from '../types/toast'
 
@@ -53,6 +53,8 @@ export interface AppState {
   contactLists: ContactList[]
   autoresponders: Autoresponder[]
   emailTemplates: EmailTemplate[]
+  websites: Website[]
+  websiteTemplates: WebsiteTemplate[]
   toasts: Toast[]
 
   addToast: (type: ToastType, title: string, message?: string) => void
@@ -116,6 +118,11 @@ export interface AppState {
   addClientMessage: (m: Omit<ClientMessage, 'id' | 'createdAt'>) => void
   updateClientMessage: (id: string, data: Partial<ClientMessage>) => void
   setPortalViewClientId: (id: string | null) => void
+
+  addWebsite: (w: Omit<Website, 'id' | 'createdAt' | 'updatedAt'>) => void
+  updateWebsite: (id: string, data: Partial<Website>) => void
+  publishWebsite: (id: string) => void
+  removeWebsite: (id: string) => void
 
   addContactList: (c: Omit<ContactList, 'id' | 'createdAt'>) => void
   updateContactList: (id: string, data: Partial<ContactList>) => void
@@ -268,6 +275,8 @@ const sampleMarketIntel: MarketIntel[] = [
   { id: uid(), clientId: sampleClients[3].id, type: 'benchmark', title: 'Real Estate Marketing Benchmarks', summary: 'Avg. real estate agency spends 8-12% of revenue on marketing.', source: 'NAEA', date: daysAgo(7), relevance: 'medium' },
 ]
 
+import { SITE_TEMPLATES, buildSampleSites } from '../types/website'
+
 const sampleScopeChanges: ScopeChange[] = [
   { id: uid(), clientId: sampleClients[0].id, description: 'Unplanned video testimonial shoot added mid-cycle, no SOW amendment', impact: 'minor', status: 'detected', detectedAt: daysAgo(1), resolvedAt: '', mrrImpact: 0, notes: 'Account manager approved verbally. Needs formal amendment.' },
   { id: uid(), clientId: sampleClients[3].id, description: 'Additional 4 social posts per week requested without scope discussion', impact: 'minor', status: 'triaged', detectedAt: daysAgo(3), resolvedAt: '', mrrImpact: 500, notes: 'Triaged. Estimated 2h/week extra. Amendment drafted.' },
@@ -406,6 +415,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   clientApprovals: [],
   clientMessages: [],
   portalViewClientId: null,
+  websites: buildSampleSites(),
+  websiteTemplates: SITE_TEMPLATES,
   weeklyNotes: [],
   loading: false,
   toasts: [],
@@ -480,6 +491,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateClientMessage: (id, data) => set(s => ({ clientMessages: s.clientMessages.map(m => m.id === id ? { ...m, ...data } : m) })),
   setPortalViewClientId: (id) => set({ portalViewClientId: id }),
 
+  addWebsite: (w) => set(s => ({ websites: [...s.websites, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10), ...w }] })),
+  updateWebsite: (id, data) => set(s => ({ websites: s.websites.map(w => w.id === id ? { ...w, ...data, updatedAt: new Date().toISOString().slice(0, 10) } : w) })),
+  publishWebsite: (id) => set(s => ({ websites: s.websites.map(w => w.id === id ? { ...w, published: !w.published, lastPublishedAt: !w.published ? new Date().toISOString().slice(0, 10) : w.lastPublishedAt, updatedAt: new Date().toISOString().slice(0, 10) } : w) })),
+  removeWebsite: (id) => set(s => ({ websites: s.websites.filter(w => w.id !== id) })),
+
   addContactList: (c) => set(s => ({ contactLists: [...s.contactLists, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), ...c }] })),
   updateContactList: (id, data) => set(s => ({ contactLists: s.contactLists.map(c => c.id === id ? { ...c, ...data } : c) })),
   addContactToList: (listId, contact) => set(s => ({
@@ -506,8 +522,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateEmailTemplate: (id, data) => set(s => ({ emailTemplates: s.emailTemplates.map(t => t.id === id ? { ...t, ...data } : t) })),
 
   exportData: () => {
-    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates } = get()
-    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates, exportedAt: new Date().toISOString() }, null, 2)
+    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates, websites, websiteTemplates } = get()
+    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates, websites, websiteTemplates, exportedAt: new Date().toISOString() }, null, 2)
   },
 
   importData: (json) => {
@@ -545,6 +561,8 @@ export const useAppStore = create<AppState>((set, get) => ({
         portalInvites: data.portalInvites || [],
         clientApprovals: data.clientApprovals || [],
         clientMessages: data.clientMessages || [],
+        websites: data.websites || [],
+        websiteTemplates: data.websiteTemplates || SITE_TEMPLATES,
       })
       get().addToast('success', 'Data imported', `${data.clients?.length || 0} clients, ${data.agents?.length || 0} agents loaded`)
     } catch {
@@ -578,6 +596,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       discoveryCalls: sampleDiscoveryCalls,
       marketIntel: sampleMarketIntel,
       scopeChanges: sampleScopeChanges,
+      websites: buildSampleSites(),
+      websiteTemplates: SITE_TEMPLATES,
       aiJobs: [],
       socialQueue: [],
       apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },

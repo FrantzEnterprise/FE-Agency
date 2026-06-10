@@ -7,7 +7,7 @@ import {
   Receipt, ScrollText, HeartPulse, FileBarChart,
   Rocket, Speech, Shield, CalendarCheck, CheckCircle,
   PhoneCall, Compass, AlertTriangle, Sparkles, Share2, Settings,
-  ChevronDown, ChevronRight, Link
+  ChevronDown, ChevronRight, Globe, Link
 } from 'lucide-react'
 
 interface NavItem {
@@ -94,9 +94,15 @@ const categories: Category[] = [
     ],
   },
   {
+    label: 'WEBSITES & PORTALS',
+    items: [
+      { id: 'website-builder', label: 'Website Builder', icon: <Globe size={18} /> },
+      { id: 'client-portal', label: 'Client Portal', icon: <Link size={18} /> },
+    ],
+  },
+  {
     label: 'SYSTEM',
     items: [
-      { id: 'client-portal', label: 'Client Portal', icon: <Link size={18} /> },
       { id: 'settings', label: 'Settings', icon: <Settings size={18} /> },
     ],
   },
