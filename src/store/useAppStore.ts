@@ -1,4 +1,8 @@
 import { create } from 'zustand'
+
+// Persistence keys shared with persistence.ts
+const PERSIST_KEY = 'frantz…data'
+function clearPersistedData() { try { localStorage.removeItem(PERSIST_KEY) } catch {} }
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
 import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate } from '../types'
 
@@ -519,7 +523,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch { alert('Invalid import data') }
   },
 
-  resetData: () => set({
+  resetData: () => (clearPersistedData(), set({
     agents: buildAgents(),
     skills: buildSkills(),
     projects: buildProjects(),
@@ -552,5 +556,5 @@ export const useAppStore = create<AppState>((set, get) => ({
     clientApprovals: [],
     clientMessages: [],
     portalViewClientId: null,
-  }),
+  })),
 }))
