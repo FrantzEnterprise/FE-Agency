@@ -31,7 +31,7 @@ const STATUS_PIPELINE: { id: ContentStatus; label: string; color: string }[] = [
 const PLATFORMS = ['linkedin', 'google_business', 'facebook', 'instagram', 'twitter', 'tiktok'] as const
 
 export default function ContentStudioPage() {
-  const { contentPieces, clients, addContentPiece, updateContentPiece, deleteContentPiece } = useAppStore()
+  const storeState = useAppStore(); const contentPieces = storeState.contentPieces || []; const clients = storeState.clients || []; const { addContentPiece, updateContentPiece, deleteContentPiece } = storeState
   const getClient = (id: string) => clients.find(c => c.id === id)
 
   const [viewMode, setViewMode] = useState<ViewMode>('pipeline')

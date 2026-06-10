@@ -103,8 +103,6 @@ export interface AppState {
   updateSocialPost: (id: string, data: Partial<SocialPost>) => void
   addContentPiece: (c: Omit<ContentPiece, 'id'>) => void
   updateContentPiece: (id: string, data: Partial<ContentPiece>) => void
-  deleteContentPiece: (id: string) => void
-  updateContentPiece: (id: string, data: Partial<ContentPiece>) => void
   addPitchDeal: (d: Omit<PitchDeal, 'id' | 'createdAt'>) => void
   updatePitchDeal: (id: string, data: Partial<PitchDeal>) => void
   addDiscoveryCall: (d: Omit<DiscoveryCall, 'id'>) => void
@@ -484,7 +482,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   addContentPiece: (c) => set(s => ({ contentPieces: [...s.contentPieces, { id: uid(), ...c }] })),
   updateContentPiece: (id, data) => set(s => ({ contentPieces: s.contentPieces.map(p => p.id === id ? { ...p, ...data } : p) })),
   deleteContentPiece: (id) => set(s => ({ contentPieces: s.contentPieces.filter(p => p.id !== id) })),
-  updateContentPiece: (id, data) => set(s => ({ contentPieces: s.contentPieces.map(c => c.id === id ? { ...c, ...data } : c) })),
   addPitchDeal: (d) => set(s => ({ pitchDeals: [...s.pitchDeals, { id: uid(), createdAt: new Date().toISOString(), ...d }] })),
   updatePitchDeal: (id, data) => set(s => ({ pitchDeals: s.pitchDeals.map(d => d.id === id ? { ...d, ...data } : d) })),
   addDiscoveryCall: (d) => set(s => ({ discoveryCalls: [...s.discoveryCalls, { id: uid(), ...d }] })),
