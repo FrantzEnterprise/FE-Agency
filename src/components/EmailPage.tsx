@@ -71,6 +71,31 @@ async function sendViaProvider(provider: any, to: string, subject: string, htmlB
     }
   }
 
+  if (platform === 'sendiio') {
+    try {
+      const baseUrl = (provider.apiUrl || 'https://sendiio.com').replace(/\/$/, '')
+      const res = await fetch(`${baseUrl}/api/mail/send`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${provider.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to,
+          subject,
+          html: htmlBody,
+          from_name: 'Frantz Enterprise',
+          from_email: 'noreply@frantzenterprise.com',
+        }),
+      })
+      if (res.ok) return { ok: true }
+      const text = await res.text()
+      return { ok: false, error: `Sendiio error ${res.status}: ${text}` }
+    } catch (err: any) {
+      return { ok: false, error: err.message || 'Sendiio request failed' }
+    }
+  }
+
   // Generic SMTP / other — simulate for now
   await new Promise(r => setTimeout(r, 300))
   return { ok: true }

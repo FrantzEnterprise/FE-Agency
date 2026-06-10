@@ -20,6 +20,7 @@ const integrationCatalog = [
   { platform: 'snapchat', name: 'Snapchat', category: 'ads' as const, icon: '👻', desc: 'Snapchat Ads' },
   { platform: 'mailchimp', name: 'Mailchimp', category: 'email' as const, icon: '📧', desc: 'Email campaigns, automations, audiences' },
   { platform: 'sendgrid', name: 'SendGrid', category: 'email' as const, icon: '✉️', desc: 'Transactional email & marketing campaigns' },
+  { platform: 'sendiio', name: 'Sendiio', category: 'email' as const, icon: '📨', desc: 'Email marketing automation platform' },
   { platform: 'constant_contact', name: 'Constant Contact', category: 'email' as const, icon: '📬', desc: 'Email marketing & automation' },
   { platform: 'hubspot', name: 'HubSpot', category: 'crm' as const, icon: '🔄', desc: 'CRM, marketing hub, pipeline management' },
   { platform: 'salesforce', name: 'Salesforce', category: 'crm' as const, icon: '☁️', desc: 'Enterprise CRM & marketing cloud' },
