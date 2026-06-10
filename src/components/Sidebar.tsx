@@ -35,6 +35,7 @@ const categories: Category[] = [
       { id: 'pipeline', label: 'Pipeline', icon: <TrendingUp size={18} /> },
       { id: 'projects', label: 'Projects', icon: <Target size={18} /> },
       { id: 'tasks', label: 'Tasks', icon: <Briefcase size={18} /> },
+      { id: 'invoicing', label: 'Invoicing', icon: <Receipt size={18} /> },
       { id: 'revenue', label: 'Revenue', icon: <DollarSign size={18} /> },
       { id: 'kpi', label: 'KPIs', icon: <BarChart3 size={18} /> },
     ],

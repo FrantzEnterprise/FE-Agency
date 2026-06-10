@@ -17,6 +17,7 @@ const pageIcons: Record<string, React.ReactNode> = {
   pipeline: <TrendingUp size={16} />,
   projects: <Target size={16} />,
   tasks: <Briefcase size={16} />,
+  invoicing: <Receipt size={16} />,
   revenue: <DollarSign size={16} />,
   kpi: <BarChart3 size={16} />,
   agents: <UserCheck size={16} />,
@@ -49,7 +50,7 @@ const pageIcons: Record<string, React.ReactNode> = {
 
 const moduleNames: Record<string, string> = {
   dashboard: 'Dashboard', clients: 'Clients', pipeline: 'Pipeline',
-  projects: 'Projects', tasks: 'Tasks', revenue: 'Revenue',
+  projects: 'Projects', tasks: 'Tasks', invoicing: 'Invoicing', revenue: 'Revenue',
   kpi: 'KPIs', agents: 'Roster', skills: 'Skills',
   'org-chart': 'Org Structure', creative: 'Creative Studio',
   'qa-pipeline': 'QA Pipeline', 'paid-media': 'Paid Media',

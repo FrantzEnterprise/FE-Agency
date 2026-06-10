@@ -567,3 +567,4 @@ export const TASK_DEFINITIONS: Omit<Task, 'id' | 'startedAt' | 'dueAt' | 'status
 
 export type { Toast, ToastType } from './toast'
 export type { Website, WebsiteSection, WebsiteTemplate, WebsitePage } from './website'
+export type { Invoice, InvoiceLineItem, InvoiceStatus, Payment, StripeConfig, nextInvoiceNumber, calculateInvoiceTotals, buildSampleInvoices, buildSamplePayments } from './invoicing'

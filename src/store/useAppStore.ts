@@ -4,7 +4,7 @@ import { create } from 'zustand'
 const PERSIST_KEY = 'frantz…data'
 function clearPersistedData() { try { localStorage.removeItem(PERSIST_KEY) } catch {} }
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate, Website, WebsiteTemplate } from '../types'
+import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate, Website, WebsiteTemplate, Invoice, Payment, StripeConfig } from '../types'
 import type { Toast, ToastType } from '../types/toast'
 import { createToast } from '../types/toast'
 
@@ -55,7 +55,16 @@ export interface AppState {
   emailTemplates: EmailTemplate[]
   websites: Website[]
   websiteTemplates: WebsiteTemplate[]
+  invoices: Invoice[]
+  payments: Payment[]
+  stripeConfig: StripeConfig
   toasts: Toast[]
+
+  addInvoice: (inv: Omit<Invoice, 'id' | 'createdAt' | 'updatedAt'>) => void
+  updateInvoice: (id: string, data: Partial<Invoice>) => void
+  deleteInvoice: (id: string) => void
+  addPayment: (p: Omit<Payment, 'id' | 'createdAt'>) => void
+  updateStripeConfig: (config: Partial<StripeConfig>) => void
 
   addToast: (type: ToastType, title: string, message?: string) => void
   removeToast: (id: string) => void
@@ -276,6 +285,7 @@ const sampleMarketIntel: MarketIntel[] = [
 ]
 
 import { SITE_TEMPLATES, buildSampleSites } from '../types/website'
+import { buildSampleInvoices, buildSamplePayments } from '../types/invoicing'
 
 const sampleScopeChanges: ScopeChange[] = [
   { id: uid(), clientId: sampleClients[0].id, description: 'Unplanned video testimonial shoot added mid-cycle, no SOW amendment', impact: 'minor', status: 'detected', detectedAt: daysAgo(1), resolvedAt: '', mrrImpact: 0, notes: 'Account manager approved verbally. Needs formal amendment.' },
@@ -417,6 +427,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   portalViewClientId: null,
   websites: buildSampleSites(),
   websiteTemplates: SITE_TEMPLATES,
+  invoices: buildSampleInvoices(),
+  payments: buildSamplePayments(),
+  stripeConfig: { publishableKey: '', secretKey: '', webhookSecret: '', connected: false, connectedEmail: '' },
   weeklyNotes: [],
   loading: false,
   toasts: [],
@@ -496,6 +509,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   publishWebsite: (id) => set(s => ({ websites: s.websites.map(w => w.id === id ? { ...w, published: !w.published, lastPublishedAt: !w.published ? new Date().toISOString().slice(0, 10) : w.lastPublishedAt, updatedAt: new Date().toISOString().slice(0, 10) } : w) })),
   removeWebsite: (id) => set(s => ({ websites: s.websites.filter(w => w.id !== id) })),
 
+  addInvoice: (inv) => set(s => ({ invoices: [...s.invoices, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10), ...inv }] })),
+  updateInvoice: (id, data) => set(s => ({ invoices: s.invoices.map(i => i.id === id ? { ...i, ...data, updatedAt: new Date().toISOString().slice(0, 10) } : i) })),
+  deleteInvoice: (id) => set(s => ({ invoices: s.invoices.filter(i => i.id !== id) })),
+  addPayment: (p) => set(s => ({ payments: [...s.payments, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), ...p }] })),
+  updateStripeConfig: (config) => set(s => ({ stripeConfig: { ...s.stripeConfig, ...config } })),
+
   addContactList: (c) => set(s => ({ contactLists: [...s.contactLists, { id: uid(), createdAt: new Date().toISOString().slice(0, 10), ...c }] })),
   updateContactList: (id, data) => set(s => ({ contactLists: s.contactLists.map(c => c.id === id ? { ...c, ...data } : c) })),
   addContactToList: (listId, contact) => set(s => ({
@@ -522,8 +541,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateEmailTemplate: (id, data) => set(s => ({ emailTemplates: s.emailTemplates.map(t => t.id === id ? { ...t, ...data } : t) })),
 
   exportData: () => {
-    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates, websites, websiteTemplates } = get()
-    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates, websites, websiteTemplates, exportedAt: new Date().toISOString() }, null, 2)
+    const { agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates, websites, websiteTemplates, invoices, payments, stripeConfig } = get()
+    return JSON.stringify({ agents, skills, projects, tasks, clients, clientTasks, revenueHistory, pipeline, kpis, weeklyNotes, creativeAssets, campaigns, seoKeywords, emailCampaigns, socialPosts, contentPieces, pitchDeals, discoveryCalls, marketIntel, scopeChanges, aiJobs, socialQueue, apiConfig, integrations, settings, portalInvites, clientApprovals, clientMessages, contactLists, autoresponders, emailTemplates, websites, websiteTemplates, invoices, payments, stripeConfig, exportedAt: new Date().toISOString() }, null, 2)
   },
 
   importData: (json) => {
@@ -563,6 +582,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         clientMessages: data.clientMessages || [],
         websites: data.websites || [],
         websiteTemplates: data.websiteTemplates || SITE_TEMPLATES,
+        invoices: data.invoices || [],
+        payments: data.payments || [],
+        stripeConfig: data.stripeConfig || { publishableKey: '', secretKey: '', webhookSecret: '', connected: false, connectedEmail: '' },
       })
       get().addToast('success', 'Data imported', `${data.clients?.length || 0} clients, ${data.agents?.length || 0} agents loaded`)
     } catch {
@@ -598,6 +620,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       scopeChanges: sampleScopeChanges,
       websites: buildSampleSites(),
       websiteTemplates: SITE_TEMPLATES,
+      invoices: buildSampleInvoices(),
+      payments: buildSamplePayments(),
+      stripeConfig: { publishableKey: '', secretKey: '', webhookSecret: '', connected: false, connectedEmail: '' },
       aiJobs: [],
       socialQueue: [],
       apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },

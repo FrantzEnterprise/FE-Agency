@@ -19,6 +19,7 @@ const SAVE_KEYS: (keyof AppState)[] = [
   'apiConfig', 'integrations', 'settings',
   'portalInvites', 'clientApprovals', 'clientMessages',
   'websites', 'websiteTemplates',
+  'invoices', 'payments', 'stripeConfig',
 ]
 
 /** Hydrate persisted data on first load */

@@ -8,6 +8,7 @@ import ProjectsPage from './components/ProjectsPage'
 import TasksPage from './components/TasksPage'
 import KpiPage from './components/KpiPage'
 import RevenuePage from './components/RevenuePage'
+import InvoicingPage from './components/InvoicingPage'
 import RosterPage from './components/RosterPage'
 import SkillsPage from './components/SkillsPage'
 import OrgChartPage from './components/OrgChartPage'
@@ -49,6 +50,7 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   projects: { title: 'Projects', component: <ProjectsPage /> },
   tasks: { title: 'Tasks', component: <TasksPage /> },
   revenue: { title: 'Revenue', component: <RevenuePage /> },
+  invoicing: { title: 'Invoicing & Payments', component: <InvoicingPage /> },
   kpi: { title: 'KPIs', component: <KpiPage /> },
   agents: { title: 'Roster', component: <RosterPage /> },
   skills: { title: 'Skills', component: <SkillsPage /> },
