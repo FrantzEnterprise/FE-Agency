@@ -33,6 +33,17 @@ export function hydrateStore(): void {
         if (key in parsed) partial[key] = (parsed as any)[key]
       }
       // Ensure array fields never become null/undefined from stale localStorage
+      // Ensure all clients have mrr + health defined
+      if (Array.isArray(partial.clients)) {
+        partial.clients = (partial.clients as any[]).map((c: any) => ({
+          ...c,
+          mrr: c.mrr ?? (c as any).monthlyRetainer ?? 2500,
+          health: c.health || "healthy",
+          retainerTier: c.retainerTier || "Growth",
+          name: c.name || "",
+          industry: c.industry || "",
+        }))
+      }
       for (const key of ["agents","skills","projects","tasks","clients","clientTasks","contentPieces","pitchDeals","discoveryCalls","marketIntel","scopeChanges","aiJobs","socialQueue","integrations","portalInvites","clientApprovals","clientMessages","websites","invoices","payments"]) {
         if (key in partial && !Array.isArray((partial as any)[key])) (partial as any)[key] = []
       }
