@@ -704,6 +704,42 @@ tbody td {
     color: #e2e8f0;
   }
 
+  /* ── Close button inside sidebar drawer ── */
+  .sidebar-close-btn {
+    display: flex;
+    position: absolute;
+    top: 16px;
+    right: 14px;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--sidebar-text);
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+
+  .sidebar-close-btn:hover {
+    opacity: 1;
+    background: var(--sidebar-hover);
+  }
+
+  /* ── Add right padding to header so text isn't behind close btn ── */
+  .sidebar .sidebar-header {
+    padding-right: 44px;
+  }
+
+  /* Hide hamburger toggle when sidebar is open */
+  body.sidebar-open .sidebar-toggle {
+    display: none;
+  }
+
   /* ── Overlay ── */
   .sidebar-overlay {
     display: block;

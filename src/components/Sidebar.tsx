@@ -110,6 +110,7 @@ function useActiveCategory(activeModule: string, cats: Category[]): string | nul
 }
 
 export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const close = () => onNavigate?.() // closes the sidebar drawer
   const activeModule = useAppStore(s => s.activeModule)
   const setActiveModule = useAppStore(s => s.setActiveModule)
   const initialCat = useActiveCategory(activeModule, categories) || 'OVERVIEW'
@@ -132,6 +133,11 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <nav className="sidebar">
+      {onNavigate && (
+        <button className="sidebar-close-btn" onClick={close} aria-label="Close menu">
+          ✕
+        </button>
+      )}
       <div className="sidebar-header">
         <div className="sidebar-brand">
           Frantz<span>Enterprise</span>
