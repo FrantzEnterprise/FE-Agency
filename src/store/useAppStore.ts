@@ -263,6 +263,13 @@ const sampleContentPieces: ContentPiece[] = [
     { id: uid(), clientId: sampleClients[2].id, type: 'podcast', title: 'Real Estate Market Trends 2026', status: 'brief', assignee: 'brian', dueDate: daysFromNow(10), publishedAt: '', url: '', outline: 'Intro, Market overview, Regional trends, Q&A', body: '', seoKeywords: ['real estate trends', '2026 housing market'], wordCount: 0, tone: 'conversational', targetAudience: 'Real estate professionals', scheduledAt: '', socialPost: 'Tune in to our latest podcast on 2026 real estate trends! 🎙️', generatedWithAi: false },
     { id: uid(), clientId: sampleClients[0].id, type: 'landing_page', title: 'BrightPath Dental Free Consultation', status: 'review', assignee: 'copywriter', dueDate: daysFromNow(3), publishedAt: '', url: '', outline: 'Hero, Benefits, Testimonials, CTA', body: 'Book your free consultation today...', seoKeywords: ['free dental consultation', 'BrightPath Dental'], wordCount: 400, tone: 'persuasive', targetAudience: 'New dental patients', scheduledAt: '', socialPost: 'New patients: get a free consultation at BrightPath Dental! 🦷', generatedWithAi: true },
 ]
+const samplePortalInvites: PortalInvite[] = [
+  { id: uid(), clientId: sampleClients[0].id, token: 'demo-brightpath-2026', email: 'sarah@brightpathdental.com', contactName: 'Sarah Chen', status: 'active', createdAt: daysAgo(30), lastAccessedAt: daysAgo(2), expiresAt: daysFromNow(335) },
+  { id: uid(), clientId: sampleClients[1].id, token: 'demo-summit-2026', email: 'mike@summitroofing.com', contactName: 'Mike Torres', status: 'active', createdAt: daysAgo(14), lastAccessedAt: daysAgo(1), expiresAt: daysFromNow(351) },
+  { id: uid(), clientId: sampleClients[3].id, token: 'demo-coastal-2026', contactName: 'James Wilson', status: 'pending', createdAt: daysAgo(7), lastAccessedAt: '', expiresAt: daysFromNow(358) },
+]
+
+
 
 const samplePitchDeals: PitchDeal[] = [
   { id: uid(), company: 'BayView Medical Group', contact: 'Dr. James Wong', contactRole: 'CEO', targetTier: 'Scale', estimatedMRR: 7500, stage: 'negotiating', stageOrder: 6, notes: 'Very interested in full-service. Budget approved.', nextStep: 'Send final SOW with pricing', createdAt: daysAgo(21) },
@@ -423,7 +430,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
   integrations: [],
   settings: { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
-  portalInvites: [],
+  portalInvites: samplePortalInvites,
   clientApprovals: [],
   clientMessages: [],
   portalViewClientId: null,
@@ -631,7 +638,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
       integrations: [],
       settings: { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
-      portalInvites: [],
+      portalInvites: samplePortalInvites,
       clientApprovals: [],
       clientMessages: [],
       portalViewClientId: null,

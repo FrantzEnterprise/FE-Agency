@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useAppStore } from '../store/useAppStore'
 
-type Tab = 'dashboard' | 'messages' | 'approvals' | 'deliverables'
+type Tab = 'dashboard' | 'messages' | 'approvals' | 'deliverables' | 'invoices'
 
 export default function ClientPortalView() {
-  const { portalInvites, clients, clientApprovals, clientMessages, projects, tasks, contentPieces, socialPosts, creativeAssets, campaigns, addClientMessage, updateClientMessage } = useAppStore()
+  const { portalInvites, clients, clientApprovals, clientMessages, projects, tasks, contentPieces, socialPosts, creativeAssets, campaigns, invoices, payments, addClientMessage, updateClientMessage } = useAppStore()
   const [params, setParams] = useState<{ portal: string }>({ portal: '' })
   const [tab, setTab] = useState<Tab>('dashboard')
   const [msgText, setMsgText] = useState('')
@@ -25,18 +25,45 @@ export default function ClientPortalView() {
   const invite = portalInvites.find(i => i.token === params.portal)
   const client = invite ? clients.find(c => c.id === invite.clientId) : null
 
+  const [portalCode, setPortalCode] = useState('')
+
   if (!params.portal || !invite) {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh',
-        background: '#0f172a', color: '#e2e8f0', padding: 40,
+        background: '#0f172a', color: '#e2e8f0', padding: 24,
       }}>
-        <div style={{ textAlign: 'center', maxWidth: 400 }}>
+        <div style={{ textAlign: 'center', maxWidth: 420, width: '100%' }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>🔗</div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Client Portal</h1>
-          <p style={{ fontSize: 14, color: '#94a3b8' }}>
-            Please use the invite link your agency provided to access your client portal.
+          <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>Client Portal</h1>
+          <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24 }}>
+            Enter your portal code or use the magic link from your invite email.
           </p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input type="text" value={portalCode}
+              onChange={e => setPortalCode(e.target.value)}
+              placeholder="Paste your portal code here..."
+              onKeyDown={e => { if (e.key === 'Enter' && portalCode.trim()) { window.location.search = '?portal=' + portalCode.trim() } }}
+              style={{
+                flex: 1, padding: '12px 16px', borderRadius: 8, border: '1px solid #334155',
+                background: '#1e293b', color: '#e2e8f0', fontSize: 14,
+                outline: 'none',
+              }} />
+            <button onClick={() => { if (portalCode.trim()) window.location.search = '?portal=' + portalCode.trim() }}
+              style={{
+                padding: '12px 20px', borderRadius: 8, border: 'none', background: '#3b82f6', color: '#fff',
+                fontWeight: 700, cursor: 'pointer', fontSize: 14,
+              }}>
+              →
+            </button>
+          </div>
+          {!params.portal && (
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 24, lineHeight: 1.6, padding: 16, background: '#1e293b', borderRadius: 8 }}>
+              <strong>Demo codes:</strong><br />
+              <code style={{ color: '#a78bfa' }}>demo-brightpath-2026</code> — BrightPath Dental<br />
+              <code style={{ color: '#a78bfa' }}>demo-summit-2026</code> — Summit Roofing
+            </div>
+          )}
         </div>
       </div>
     )
@@ -69,6 +96,7 @@ export default function ClientPortalView() {
   const clientContent = contentPieces.filter(c => c.clientId === client.id)
   const clientSocial = socialPosts.filter(p => p.clientId === client.id)
   const clientAssets = creativeAssets.filter(a => a.clientId === client.id)
+  const clientInvoices = invoices.filter(i => i.clientId === client.id)
 
   const bg = dark ? '#0f172a' : '#ffffff'
   const text = dark ? '#e2e8f0' : '#0f172a'
@@ -127,6 +155,7 @@ export default function ClientPortalView() {
           { id: 'messages' as const, label: `💬 Messages${unreadAgency > 0 ? ` (${unreadAgency})` : ''}` },
           { id: 'approvals' as const, label: `✅ Approvals${clientPendings.length > 0 ? ` (${clientPendings.length})` : ''}` },
           { id: 'deliverables' as const, label: '📦 Deliverables' },
+          { id: 'invoices' as const, label: '📄 Invoices' },
         ].map(t => (
           <button key={t.id}
             style={{
@@ -338,6 +367,67 @@ export default function ClientPortalView() {
                 Your agency will submit content and deliverables here for your review.
               </p>
             </div>
+          )}
+        </div>
+      )}
+
+            {/* ─── INVOICES ─── */}
+      {tab === 'invoices' && (
+        <div style={{ maxWidth: 700 }}>
+          {clientInvoices.length === 0 ? (
+            <div style={{ background: cardBg, borderRadius: 8, textAlign: 'center', padding: 24 }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>📄</div>
+              <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>No Invoices</p>
+              <p style={{ fontSize: 13, color: muted }}>Your invoices from Frantz Enterprise will appear here.</p>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
+                <div style={{ background: cardBg, borderRadius: 8, textAlign: 'center', padding: 14 }}>
+                  <div style={{ fontSize: 11, color: muted }}>Total Billed</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#22c55e' }}>${clientInvoices.reduce((s, i) => s + i.total, 0).toLocaleString()}</div>
+                </div>
+                <div style={{ background: cardBg, borderRadius: 8, textAlign: 'center', padding: 14 }}>
+                  <div style={{ fontSize: 11, color: muted }}>Paid</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#3b82f6' }}>${clientInvoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0).toLocaleString()}</div>
+                </div>
+                <div style={{ background: cardBg, borderRadius: 8, textAlign: 'center', padding: 14 }}>
+                  <div style={{ fontSize: 11, color: muted }}>Outstanding</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#ef4444' }}>${clientInvoices.reduce((s, i) => s + i.balance, 0).toLocaleString()}</div>
+                </div>
+              </div>
+              {clientInvoices.map(inv => (
+                <div key={inv.id} style={{ background: cardBg, borderRadius: 8, marginBottom: 8, padding: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700 }}>{inv.invoiceNumber}</div>
+                      <div style={{ fontSize: 11, color: muted, marginTop: 1 }}>Issued {new Date(inv.issueDate).toLocaleDateString()} · Due {new Date(inv.dueDate).toLocaleDateString()}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 16, fontWeight: 800 }}>${inv.total.toLocaleString()}</div>
+                      <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 600, background: inv.status === 'paid' ? '#22c55e20' : inv.status === 'overdue' ? '#ef444420' : '#eab30820', color: inv.status === 'paid' ? '#22c55e' : inv.status === 'overdue' ? '#ef4444' : '#eab308' }}>{inv.status.toUpperCase()}</span>
+                    </div>
+                  </div>
+                  {inv.lineItems.slice(0, 3).map(item => (
+                    <div key={item.id} style={{ fontSize: 12, color: muted, marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
+                      <span>{item.description}</span>
+                      <span>${item.amount.toLocaleString()}</span>
+                    </div>
+                  ))}
+                  {inv.lineItems.length > 3 && <div style={{ fontSize: 11, color: muted, marginTop: 2 }}>+{inv.lineItems.length - 3} more items</div>}
+                  {inv.status === 'paid' && inv.paymentMethod && (
+                    <div style={{ fontSize: 11, color: '#22c55e', marginTop: 6 }}>
+                      ✅ Paid via {inv.paymentMethod.replace(/_/g, ' ')} on {new Date(inv.paidAt).toLocaleDateString()}
+                    </div>
+                  )}
+                  {inv.balance > 0 && (
+                    <div style={{ fontSize: 12, color: '#ef4444', marginTop: 6, fontWeight: 600 }}>
+                      Balance due: ${inv.balance.toLocaleString()}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </>
           )}
         </div>
       )}
