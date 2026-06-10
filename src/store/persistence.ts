@@ -32,6 +32,10 @@ export function hydrateStore(): void {
       for (const key of SAVE_KEYS) {
         if (key in parsed) partial[key] = (parsed as any)[key]
       }
+      // Ensure array fields never become null/undefined from stale localStorage
+      for (const key of ["agents","skills","projects","tasks","clients","clientTasks","contentPieces","pitchDeals","discoveryCalls","marketIntel","scopeChanges","aiJobs","socialQueue","integrations","portalInvites","clientApprovals","clientMessages","websites","invoices","payments"]) {
+        if (key in partial && !Array.isArray((partial as any)[key])) (partial as any)[key] = []
+      }
       if (Object.keys(partial).length > 0) {
         useAppStore.setState(partial)
       }
