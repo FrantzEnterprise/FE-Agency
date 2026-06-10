@@ -137,7 +137,7 @@ body {
 
 .sidebar-nav {
   flex: 1;
-  padding: 12px 10px 40px;
+  padding: 12px 10px 24px;
   overflow-y: auto;
   min-height: 0;
 }
