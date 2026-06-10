@@ -12,7 +12,11 @@ const STAGE_COLORS: Record<string, string> = {
 }
 
 export default function PitchEnginePage() {
-  const { pitchDeals, clients, addPitchDeal, updatePitchDeal } = useAppStore()
+  const store = useAppStore()
+  const pitchDeals = store.pitchDeals || []
+  const clients = store.clients
+  const addPitchDeal = store.addPitchDeal
+  const updatePitchDeal = store.updatePitchDeal
   const getClient = (id: string) => clients.find(c => c.id === id)
 
   const [stageFilter, setStageFilter] = useState('all')

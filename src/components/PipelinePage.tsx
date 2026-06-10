@@ -14,7 +14,10 @@ const stageLabels: Record<string, string> = {
 }
 
 export default function PipelinePage() {
-  const { pipeline, addPipelineDeal, updatePipelineDeal } = useAppStore()
+  const store = useAppStore()
+  const pipeline = store.pipeline || []
+  const addPipelineDeal = store.addPipelineDeal
+  const updatePipelineDeal = store.updatePipelineDeal
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
@@ -96,7 +99,7 @@ export default function PipelinePage() {
                 <td><span style={{ fontWeight: 600 }}>{d.company}</span></td>
                 <td style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{d.contact}</td>
                 <td><span className={`badge ${d.tier === 'Scale' ? 'badge-purple' : d.tier === 'Growth' ? 'badge-blue' : 'badge-gray'}`}>{d.tier}</span></td>
-                <td><span style={{ fontWeight: 700 }}>${d.estimatedMRR.toLocaleString()}</span></td>
+                <td><span style={{ fontWeight: 700 }}>${(d.estimatedMRR || 0).toLocaleString()}</span></td>
                 <td><span className={`badge ${d.stage === 'negotiation' ? 'badge-green' : d.stage === 'proposal' ? 'badge-blue' : 'badge-gray'}`}>{stageLabels[d.stage]}</span></td>
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -104,7 +107,7 @@ export default function PipelinePage() {
                     <span style={{ fontSize: 12, fontWeight: 600 }}>{d.probability}%</span>
                   </div>
                 </td>
-                <td style={{ fontWeight: 600 }}>${Math.round(d.estimatedMRR * d.probability / 100).toLocaleString()}</td>
+                <td style={{ fontWeight: 600 }}>${Math.round((d.estimatedMRR || 0) * (d.probability || 0) / 100).toLocaleString()}</td>
                 <td><button className="btn btn-ghost btn-sm btn-icon" onClick={() => openEdit(d)}><Edit3 size={14} /></button></td>
               </tr>
             ))}
