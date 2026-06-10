@@ -5,6 +5,8 @@ const PERSIST_KEY = 'frantz…data'
 function clearPersistedData() { try { localStorage.removeItem(PERSIST_KEY) } catch {} }
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
 import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate } from '../types'
+import type { Toast, ToastType } from '../types/toast'
+import { createToast } from '../types/toast'
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
@@ -51,7 +53,10 @@ export interface AppState {
   contactLists: ContactList[]
   autoresponders: Autoresponder[]
   emailTemplates: EmailTemplate[]
+  toasts: Toast[]
 
+  addToast: (type: ToastType, title: string, message?: string) => void
+  removeToast: (id: string) => void
   toggleDark: () => void
   setActiveModule: (m: string) => void
 
@@ -128,6 +133,20 @@ export interface AppState {
   exportData: () => string
   importData: (json: string) => void
   resetData: () => void
+}
+
+// ─── Toast state (not persisted) ─────────────────────────────────────────
+
+export function useToast() {
+  const store = useAppStore.getState()
+  return {
+    toasts: store.toasts,
+    success: (title: string, message?: string) => store.addToast('success', title, message),
+    error: (title: string, message?: string) => store.addToast('error', title, message),
+    warning: (title: string, message?: string) => store.addToast('warning', title, message),
+    info: (title: string, message?: string) => store.addToast('info', title, message),
+    dismiss: (id: string) => store.removeToast(id),
+  }
 }
 
 // ─── Sample Data ────────────────────────────────────────────────────────
@@ -389,10 +408,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   portalViewClientId: null,
   weeklyNotes: [],
   loading: false,
+  toasts: [],
   contactLists: sampleContactLists,
   autoresponders: sampleAutoresponders,
   emailTemplates: sampleEmailTemplates,
 
+  addToast: (type, title, message) => set(s => ({
+    toasts: [...s.toasts, createToast(type, title, message)],
+  })),
+  removeToast: (id) => set(s => ({
+    toasts: s.toasts.filter(t => t.id !== id),
+  })),
   toggleDark: () => set(s => ({ dark: !s.dark })),
   setActiveModule: (m) => set({ activeModule: m }),
 
@@ -520,41 +546,48 @@ export const useAppStore = create<AppState>((set, get) => ({
         clientApprovals: data.clientApprovals || [],
         clientMessages: data.clientMessages || [],
       })
-    } catch { alert('Invalid import data') }
+      get().addToast('success', 'Data imported', `${data.clients?.length || 0} clients, ${data.agents?.length || 0} agents loaded`)
+    } catch {
+      get().addToast('error', 'Import failed', 'Invalid JSON file')
+    }
   },
 
-  resetData: () => (clearPersistedData(), set({
-    agents: buildAgents(),
-    skills: buildSkills(),
-    projects: buildProjects(),
-    tasks: buildTasks(),
-    clients: sampleClients,
-    clientTasks: sampleClientTasks,
-    revenueHistory: sampleRevenue,
-    pipeline: samplePipeline,
-    kpis: sampleKPIs,
-    weeklyNotes: [],
-    creativeAssets: sampleAssets,
-    campaigns: sampleCampaigns,
-    seoKeywords: sampleSeoKeywords,
-    emailCampaigns: sampleEmailCampaigns,
-    contactLists: sampleContactLists,
-    autoresponders: sampleAutoresponders,
-    emailTemplates: sampleEmailTemplates,
-    socialPosts: sampleSocialPosts,
-    contentPieces: sampleContentPieces,
-    pitchDeals: samplePitchDeals,
-    discoveryCalls: sampleDiscoveryCalls,
-    marketIntel: sampleMarketIntel,
-    scopeChanges: sampleScopeChanges,
-    aiJobs: [],
-    socialQueue: [],
-    apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
-    integrations: [],
-    settings: { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
-    portalInvites: [],
-    clientApprovals: [],
-    clientMessages: [],
-    portalViewClientId: null,
-  })),
+  resetData: () => {
+    clearPersistedData()
+    set({
+      agents: buildAgents(),
+      skills: buildSkills(),
+      projects: buildProjects(),
+      tasks: buildTasks(),
+      clients: sampleClients,
+      clientTasks: sampleClientTasks,
+      revenueHistory: sampleRevenue,
+      pipeline: samplePipeline,
+      kpis: sampleKPIs,
+      weeklyNotes: [],
+      creativeAssets: sampleAssets,
+      campaigns: sampleCampaigns,
+      seoKeywords: sampleSeoKeywords,
+      emailCampaigns: sampleEmailCampaigns,
+      contactLists: sampleContactLists,
+      autoresponders: sampleAutoresponders,
+      emailTemplates: sampleEmailTemplates,
+      socialPosts: sampleSocialPosts,
+      contentPieces: sampleContentPieces,
+      pitchDeals: samplePitchDeals,
+      discoveryCalls: sampleDiscoveryCalls,
+      marketIntel: sampleMarketIntel,
+      scopeChanges: sampleScopeChanges,
+      aiJobs: [],
+      socialQueue: [],
+      apiConfig: { baseUrl: '', apiKey: '', textModel: 'gpt-4', imageModel: 'dall-e-3', videoModel: 'runway-gen-3' },
+      integrations: [],
+      settings: { agencyName: 'Frantz Enterprise', agencyTagline: 'Full-Service Digital Agency', defaultTimezone: 'US/Central', currency: 'USD', dateFormat: 'MMMM D, YYYY', weekStartDay: 1, enableDarkByDefault: true, enableAutoBackup: false, backupIntervalHours: 24 },
+      portalInvites: [],
+      clientApprovals: [],
+      clientMessages: [],
+      portalViewClientId: null,
+    })
+    get().addToast('info', 'Data reset', 'Sample data reloaded')
+  },
 }))

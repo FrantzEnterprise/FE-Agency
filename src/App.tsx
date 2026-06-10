@@ -36,6 +36,7 @@ import SocialPublisher from './components/SocialPublisher'
 import SettingsPage from './components/SettingsPage'
 import ClientPortalPage from './components/ClientPortalPage'
 import ClientPortalView from './components/ClientPortalView'
+import ToastContainer from './components/ToastContainer'
 import { Sun, Moon, Download, Upload, RotateCcw, Rocket, Link, Menu, X } from 'lucide-react'
 
 const modules: Record<string, { title: string; component: React.ReactNode }> = {
@@ -195,6 +196,8 @@ export default function App() {
           <main className="main-content">
             {currentModule.component}
           </main>
+
+          <ToastContainer />
         </div>
       </div>
     </div>

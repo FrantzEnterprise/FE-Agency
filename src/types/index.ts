@@ -564,3 +564,5 @@ export const TASK_DEFINITIONS: Omit<Task, 'id' | 'startedAt' | 'dueAt' | 'status
   { slug: 'run-onboarding-sequence-client-1', name: 'Run 14-day onboarding sequence for Client #1', description: 'Execute the full onboarding sequence.', projectId: 'client-1-onboarding-first-cycle', assignee: 'account-manager', completionCriteria: ['Audits complete', 'Brand voice captured', 'Analytics baseline set', 'Kickoff call held'] },
   { slug: 'ship-cycle-1-report-client-1', name: 'Ship Cycle 1 monthly report to Client #1', description: 'Deliver the first monthly report with recap call.', projectId: 'client-1-onboarding-first-cycle', assignee: 'reporting-engineer', completionCriteria: ['Report delivered', 'Recap call held'] },
 ]
+
+export type { Toast, ToastType } from './toast'
