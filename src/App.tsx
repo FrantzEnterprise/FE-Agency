@@ -37,6 +37,7 @@ import SocialPublisher from './components/SocialPublisher'
 import SettingsPage from './components/SettingsPage'
 import ClientPortalPage from './components/ClientPortalPage'
 import WebsiteBuilderPage from './components/WebsiteBuilderPage'
+import SalesFunnelPage from './components/SalesFunnelPage'
 import ClientPortalView from './components/ClientPortalView'
 import ToastContainer from './components/ToastContainer'
 import CommandPalette from './components/CommandPalette'
@@ -79,6 +80,7 @@ const modules: Record<string, { title: string; component: React.ReactNode }> = {
   settings: { title: 'Settings', component: <SettingsPage /> },
   'client-portal': { title: 'Client Portal', component: <ClientPortalPage /> },
   'website-builder': { title: 'Website Builder', component: <WebsiteBuilderPage /> },
+  'sales-funnel': { title: 'Sales Funnel', component: <SalesFunnelPage /> },
 }
 
 class ErrorBoundary extends Component<{children: ReactNode}, {error: Error | null}> {

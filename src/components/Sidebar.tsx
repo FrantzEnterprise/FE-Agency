@@ -85,6 +85,7 @@ const categories: Category[] = [
       { id: 'discovery-call', label: 'Discovery Calls', icon: <PhoneCall size={18} /> },
       { id: 'market-research', label: 'Market Researcher', icon: <Compass size={18} /> },
       { id: 'scope-creep', label: 'Scope Creep', icon: <AlertTriangle size={18} /> },
+      { id: 'sales-funnel', label: 'Sales Funnel', icon: <TrendingUp size={18} /> },
     ],
   },
   {
