@@ -13,7 +13,6 @@ const funnelStages = [
 const sampleLead = { name: 'Sarah Chen', company: 'BrightPath Dental', stage: 'interest', value: 9500, source: 'Google Ads', daysInStage: 3 }
 
 export default function SalesFunnelPage() {
-  const activeModule = useAppStore(s => s.activeModule)
   const clients = useAppStore(s => s.clients)
   const [expandedStage, setExpandedStage] = useState<string | null>('interest')
 
@@ -204,14 +203,14 @@ export default function SalesFunnelPage() {
                   <td style={{ padding: '10px 12px' }}>
                     <span style={{
                       padding: '2px 6px', borderRadius: 4, fontSize: 11, fontWeight: 600,
-                      background: c.retainerTier === 'Premium' ? '#22c55e20' : c.retainerTier === 'Growth' ? '#6366f120' : '#3b82f620',
-                      color: c.retainerTier === 'Premium' ? '#22c55e' : c.retainerTier === 'Growth' ? '#6366f1' : '#3b82f6',
+                      background: c.retainerTier === 'Scale' ? '#22c55e20' : c.retainerTier === 'Growth' ? '#6366f120' : '#3b82f620',
+                      color: c.retainerTier === 'Scale' ? '#22c55e' : c.retainerTier === 'Growth' ? '#6366f1' : '#3b82f6',
                     }}>
                       {c.retainerTier}
                     </span>
                   </td>
                   <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, color: '#22c55e' }}>
-                    ${c.monthlyRetainer.toLocaleString()}
+                    ${(c.mrr || 0).toLocaleString()}
                   </td>
                   <td style={{ padding: '10px 12px', textAlign: 'center' }}>
                     <span style={{
@@ -223,7 +222,7 @@ export default function SalesFunnelPage() {
                     </span>
                   </td>
                   <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, color: '#e2e8f0' }}>
-                    ${(c.monthlyRetainer * 24).toLocaleString()}
+                    ${((c.mrr || 0) * 24).toLocaleString()}
                   </td>
                 </tr>
               ))}
