@@ -96,18 +96,19 @@ const categories: Category[] = [
   },
   
   {
-    label: 'SYSTEM',
-    items: [
-      { id: 'settings', label: 'Settings', icon: <Settings size={18} /> },
-    ],
-  },
-  {
     label: 'WEBSITES & PORTALS',
     items: [
       { id: 'website-builder', label: 'Website Builder', icon: <Globe size={18} /> },
       { id: 'client-portal', label: 'Client Portal', icon: <Link size={18} /> },
     ],
   },
+  {
+    label: 'SYSTEM',
+    items: [
+      { id: 'settings', label: 'Settings', icon: <Settings size={18} /> },
+    ],
+  },
+  
 ]
 
 function useActiveCategory(activeModule: string, cats: Category[]): string | null {
