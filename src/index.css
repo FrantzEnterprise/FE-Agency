@@ -661,3 +661,24 @@ tbody td {
 /* fresh deploy 2026-06-09 */
 
 /* v2 - force cache break */
+
+/* ─── Print Styles (PDF Export) ───────────────────────────────────── */
+@media print {
+  @page { margin: 0; size: A4 portrait; }
+  body { background: #fff !important; }
+  * { box-shadow: none !important; text-shadow: none !important; }
+  .sidebar, .topbar, .sidebar-toggle, .btn, button { display: none !important; }
+  .main-area { margin-left: 0 !important; width: 100% !important; }
+  .main-content { padding: 40px 60px !important; max-width: 100% !important; }
+  .card { border: 1px solid #e5e7eb !important; page-break-inside: avoid; }
+  .report-header { text-align: center; margin-bottom: 24px; }
+  .report-header h1 { font-size: 24px; margin: 0; }
+  .report-header .report-date { font-size: 12px; color: #6b7280; }
+  .print-only { display: block !important; }
+  .no-print { display: none !important; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th, td { padding: 6px 8px; border: 1px solid #d1d5db; text-align: left; }
+  th { background: #f3f4f6; font-weight: 600; }
+  tr:nth-child(even) { background: #f9fafb; }
+}
+.print-only { display: none; }
