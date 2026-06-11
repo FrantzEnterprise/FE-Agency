@@ -21,6 +21,8 @@ export default function PitchEnginePage() {
 
   const [stageFilter, setStageFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState({ name: '', estimatedMRR: 0, notes: '' })
   const [showAdd, setShowAdd] = useState(false)
   const [form, setForm] = useState({ clientId: '', name: '', stage: 'discovery', value: 0, notes: '' })
 
