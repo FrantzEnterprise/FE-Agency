@@ -20,6 +20,7 @@ const daysFromNow = (n: number) => { const d = new Date(); d.setDate(d.getDate()
 export interface AppState {
   dark: boolean
   activeModule: string
+  navHistory: string[]
   agents: Agent[]
   skills: Skill[]
   projects: Project[]
@@ -70,6 +71,7 @@ export interface AppState {
   removeToast: (id: string) => void
   toggleDark: () => void
   setActiveModule: (m: string) => void
+  goBack: () => void
 
   addAgent: (a: Omit<Agent, 'id'>) => void
   updateAgent: (id: string, data: Partial<Agent>) => void
@@ -406,6 +408,7 @@ const buildTasks = (): Task[] =>
 export const useAppStore = create<AppState>((set, get) => ({
   dark: true,
   activeModule: 'dashboard',
+  navHistory: [],
   agents: buildAgents(),
   skills: buildSkills(),
   projects: buildProjects(),
@@ -453,7 +456,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     toasts: s.toasts.filter(t => t.id !== id),
   })),
   toggleDark: () => set(s => ({ dark: !s.dark })),
-  setActiveModule: (m) => set({ activeModule: m }),
+  setActiveModule: (m) => set(s => ({ activeModule: m, navHistory: [...s.navHistory, s.activeModule] })),
+  goBack: () => set(s => {
+    if (s.navHistory.length === 0) return {}
+    const prev = s.navHistory[s.navHistory.length - 1]
+    return { activeModule: prev, navHistory: s.navHistory.slice(0, -1) }
+  }),
 
   addAgent: (a) => set(s => ({ agents: [...s.agents, { id: uid(), ...a }] })),
   updateAgent: (id, data) => set(s => ({ agents: s.agents.map(a => a.id === id ? { ...a, ...data } : a) })),

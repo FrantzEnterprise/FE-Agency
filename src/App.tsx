@@ -152,6 +152,30 @@ export default function App() {
 
   // Check for client portal access
   const hasPortalParam = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('portal')
+
+  // ─── Navigate back button + browser back support ───
+  const navHistory = useAppStore(s => s.navHistory)
+  const goBack = useAppStore(s => s.goBack)
+
+  // Sync activeModule to URL hash for browser back button
+  useEffect(() => {
+    window.history.replaceState({ module: activeModule }, "", "#" + activeModule)
+  }, [activeModule])
+
+  // Listen for browser back/forward
+  useEffect(() => {
+    const handlePop = () => {
+      const hash = window.location.hash.replace("#", "")
+      if (hash && hash !== activeModule) {
+        setActiveModule(hash)
+      }
+    }
+    window.addEventListener("popstate", handlePop)
+    return () => window.removeEventListener("popstate", handlePop)
+  }, [activeModule])
+
+  const canGoBack = navHistory.length > 0 && navHistory[navHistory.length - 1] !== activeModule
+
   const currentModule = modules[activeModule] || modules.dashboard
 
   if (hasPortalParam) {
@@ -184,7 +208,17 @@ export default function App() {
 
         <div className={`main-area ${sidebarOpen ? 'sidebar-open' : ''}`}>
           <header className="topbar">
-            <div className="topbar-title">{currentModule.title}</div>
+            <div className="topbar-title">
+              {canGoBack && (
+                <button onClick={goBack} title="Go back" style={{
+                  background: 'none', border: 'none', color: '#64748b', cursor: 'pointer',
+                  padding: '4px 8px 4px 0', fontSize: 16, display: 'inline-flex', alignItems: 'center',
+                }}>
+                  ← <span style={{ fontSize: 12, marginLeft: 4 }}>Back</span>
+                </button>
+              )}
+              {currentModule.title}
+            </div>
             <div className="topbar-actions">
               <button className="btn btn-ghost btn-sm no-label-mobile" onClick={handleExport} title="Export data">
                 <Download size={16} /> <span className="btn-label">Export</span>
