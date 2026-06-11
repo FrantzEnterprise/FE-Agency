@@ -4,7 +4,7 @@ import { create } from 'zustand'
 const PERSIST_KEY = 'frantz…data'
 function clearPersistedData() { try { localStorage.removeItem(PERSIST_KEY) } catch {} }
 import { AGENT_DEFINITIONS, SKILL_DEFINITIONS, PROJECT_DEFINITIONS, TASK_DEFINITIONS } from '../types'
-import type { Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate, Website, WebsiteTemplate, Invoice, Payment, StripeConfig } from '../types'
+import type { FunnelStageData, Agent, Skill, Project, Task, Client, ClientTask, RevenueEntry, PipelineDeal, KPIEntry, WeeklyNote, CreativeAsset, Campaign, SeoKeyword, EmailCampaign, SocialPost, ContentPiece, PitchDeal, DiscoveryCall, MarketIntel, ScopeChange, AiGenerationJob, SocialQueueItem, ApiConfig, Integration, AgencySettings, PortalInvite, ClientApproval, ClientMessage, ContactList, ContactEntry, Autoresponder, AutoresponderStep, AutoresponderCondition, AutoresponderTrigger, AutoresponderTriggerType, AutoresponderStats, EmailTemplate, Website, WebsiteTemplate, Invoice, Payment, StripeConfig } from '../types'
 import type { Toast, ToastType } from '../types/toast'
 import { createToast } from '../types/toast'
 
@@ -30,6 +30,8 @@ export interface AppState {
   revenueHistory: RevenueEntry[]
   pipeline: PipelineDeal[]
   kpis: KPIEntry[]
+  funnelStage: string // currently expanded stage
+  funnelStages: FunnelStageData[]
   weeklyNotes: WeeklyNote[]
   creativeAssets: CreativeAsset[]
   campaigns: Campaign[]
@@ -71,6 +73,9 @@ export interface AppState {
   removeToast: (id: string) => void
   toggleDark: () => void
   setActiveModule: (m: string) => void
+  setFunnelStage: (id: string | null) => void
+  updateFunnelStage: (id: string, data: Partial<FunnelStageData>) => void
+  updateFunnelFeature: (stageId: string, featureIdx: number, data: { name?: string; desc?: string }) => void
   goBack: () => void
 
   addAgent: (a: Omit<Agent, 'id'>) => void

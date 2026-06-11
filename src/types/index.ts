@@ -578,3 +578,22 @@ export const TASK_DEFINITIONS: Omit<Task, 'id' | 'startedAt' | 'dueAt' | 'status
 export type { Toast, ToastType } from './toast'
 export type { Website, WebsiteSection, WebsiteTemplate, WebsitePage } from './website'
 export type { Invoice, InvoiceLineItem, InvoiceStatus, Payment, StripeConfig, nextInvoiceNumber, calculateInvoiceTotals, buildSampleInvoices, buildSamplePayments } from './invoicing'
+
+export interface FunnelStageFeature {
+  name: string
+  desc: string
+  module: string
+}
+
+export interface FunnelStageData {
+  id: string
+  label: string
+  icon: string
+  color: string
+  headline: string
+  description: string
+  features: FunnelStageFeature[]
+  metric: string
+  count: number
+  value: number
+}

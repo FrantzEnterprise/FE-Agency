@@ -62,6 +62,18 @@ export default function PitchEnginePage() {
     setShowAdd(false)
   }
 
+
+
+  const handleStartEdit = (deal) => {
+    setEditingId(deal.id)
+    setEditForm({ name: deal.name, estimatedMRR: deal.estimatedMRR || 0, notes: deal.notes || "" })
+  }
+
+  const handleSaveEdit = (id) => {
+    updatePitchDeal(id, { name: editForm.name, estimatedMRR: editForm.estimatedMRR, notes: editForm.notes })
+    setEditingId(null)
+  }
+
   const handleStageClick = (id: string, current: string) => {
     const idx = PITCH_STAGES.indexOf(current as any)
     if (idx < PITCH_STAGES.length - 1) updatePitchDeal(id, { stage: PITCH_STAGES[idx + 1] })
@@ -152,6 +164,24 @@ export default function PitchEnginePage() {
       {filtered.map(deal => {
         const client = getClient(deal.clientId)
         const stageIdx = PITCH_STAGES.indexOf(deal.stage as any)
+        if (editingId === deal.id) {
+          return (
+            <div key={deal.id} className="card" style={{ padding: 14, marginBottom: 10, borderLeft: `4px solid ${STAGE_COLORS[deal.stage]}` }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                <input value={editForm.name} onChange={e => setEditForm(p => ({ ...p, name: e.target.value }))}
+                  placeholder="Pitch name" style={{ flex: 1, minWidth: 150, padding: '6px 10px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--text)' }} />
+                <input type="number" value={editForm.estimatedMRR || ''} onChange={e => setEditForm(p => ({ ...p, estimatedMRR: Number(e.target.value) }))}
+                  placeholder="Value $" style={{ width: 120, padding: '6px 10px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--text)' }} />
+              </div>
+              <textarea value={editForm.notes} onChange={e => setEditForm(p => ({ ...p, notes: e.target.value }))}
+                placeholder="Notes" rows={3} style={{ width: '100%', padding: '6px 10px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--text)', resize: 'vertical', fontSize: 12 }} />
+              <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                <button className="btn btn-primary" style={{ padding: '4px 14px', fontSize: 11 }} onClick={() => handleSaveEdit(deal.id)}>Save</button>
+                <button className="btn" style={{ padding: '4px 14px', fontSize: 11 }} onClick={() => setEditingId(null)}>Cancel</button>
+              </div>
+            </div>
+          )
+        }
         return (
           <div key={deal.id} className="card" style={{ marginBottom: 10, borderLeft: `4px solid ${STAGE_COLORS[deal.stage]}`, padding: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -179,6 +209,9 @@ export default function PitchEnginePage() {
                     ↻ Reopen
                   </button>
                 ) : null}
+                <button className="btn" style={{ padding: '2px 10px', fontSize: 11 }} onClick={() => handleStartEdit(deal)}>
+                  ✏️ Edit
+                </button>
               </div>
             </div>
           </div>
