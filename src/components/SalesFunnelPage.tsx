@@ -17,7 +17,19 @@ interface StageData {
 export default function SalesFunnelPage() {
   const clients = useAppStore(s => s.clients)
   const setActiveModule = useAppStore(s => s.setActiveModule)
-  const [expandedStage, setExpandedStage] = useState<string | null>('interest')
+
+  // Restore expanded stage from URL hash, default to 'interest'
+  const initialStage = typeof window !== 'undefined'
+    ? window.location.hash.replace('#sales-funnel-', '') || 'interest'
+    : 'interest'
+  const [expandedStage, setExpandedStage] = useState<string | null>(initialStage)
+
+  const handleSetExpanded = (id: string | null) => {
+    setExpandedStage(id)
+    if (typeof window !== 'undefined') {
+      window.location.hash = id ? `sales-funnel-${id}` : 'sales-funnel'
+    }
+  }
 
   const stages: StageData[] = [
     {
@@ -170,7 +182,7 @@ export default function SalesFunnelPage() {
             >
               {/* Stage Header Bar */}
               <div
-                onClick={() => setExpandedStage(isExpanded ? null : stage.id)}
+                onClick={() => handleSetExpanded(isExpanded ? null : stage.id)}
                 style={{
                   background: isExpanded ? `linear-gradient(135deg, ${stage.color}, ${stage.color}cc)` : `${stage.color}15`,
                   border: `2px solid ${stage.color}`,

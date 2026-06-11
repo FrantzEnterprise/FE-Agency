@@ -456,7 +456,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     toasts: s.toasts.filter(t => t.id !== id),
   })),
   toggleDark: () => set(s => ({ dark: !s.dark })),
-  setActiveModule: (m) => set(s => ({ activeModule: m, navHistory: [...s.navHistory, s.activeModule] })),
+  setActiveModule: (m) => set(s => ({ 
+    activeModule: m, 
+    navHistory: s.navHistory.length > 0 && s.navHistory[s.navHistory.length - 1] === s.activeModule 
+      ? s.navHistory 
+      : [...s.navHistory, s.activeModule] 
+  })),
   goBack: () => set(s => {
     if (s.navHistory.length === 0) return {}
     const prev = s.navHistory[s.navHistory.length - 1]
