@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '../store/useAppStore'
 
 interface StageData {
@@ -18,18 +18,27 @@ export default function SalesFunnelPage() {
   const clients = useAppStore(s => s.clients)
   const setActiveModule = useAppStore(s => s.setActiveModule)
 
-  // Restore expanded stage from URL hash, default to 'interest'
-  const initialStage = typeof window !== 'undefined'
-    ? window.location.hash.replace('#sales-funnel-', '') || 'interest'
-    : 'interest'
-  const [expandedStage, setExpandedStage] = useState<string | null>(initialStage)
+  // Restore expanded stage + scroll from sessionStorage
+  const [expandedStage, setExpandedStage] = useState<string | null>(() => {
+    try { return sessionStorage.getItem('sf_expanded') || 'interest' } catch { return 'interest' }
+  })
 
   const handleSetExpanded = (id: string | null) => {
     setExpandedStage(id)
-    if (typeof window !== 'undefined') {
-      window.location.hash = id ? `sales-funnel-${id}` : 'sales-funnel'
-    }
+    try { sessionStorage.setItem('sf_expanded', id || '') } catch {}
   }
+
+  // Save scroll on unmount, restore on mount
+  const funnelRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('sf_scroll')
+      if (saved) setTimeout(() => window.scrollTo(0, parseInt(saved)), 50)
+    } catch {}
+    return () => {
+      try { sessionStorage.setItem('sf_scroll', String(window.scrollY)) } catch {}
+    }
+  }, [])
 
   const stages: StageData[] = [
     {
