@@ -7,7 +7,7 @@ import {
   Receipt, ScrollText, HeartPulse, FileBarChart,
   Rocket, Speech, Shield, CalendarCheck, CheckCircle,
   PhoneCall, Compass, AlertTriangle, Sparkles, Share2, Settings,
-  ChevronDown, ChevronRight, Globe, Link
+  ChevronDown, ChevronRight, Globe, Link, HelpCircle
 } from 'lucide-react'
 
 interface NavItem {
@@ -107,6 +107,7 @@ const categories: Category[] = [
     label: 'SYSTEM',
     items: [
       { id: 'settings', label: 'Settings', icon: <Settings size={18} /> },
+      { id: 'help', label: 'Help & Guide', icon: <HelpCircle size={18} /> },
     ],
   },
   
