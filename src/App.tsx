@@ -226,7 +226,7 @@ export default function App() {
               <button className="btn btn-ghost btn-sm no-label-mobile" onClick={handleImport} title="Import data">
                 <Upload size={16} /> <span className="btn-label">Import</span>
               </button>
-              <button className="btn btn-ghost btn-sm no-label-mobile" onClick={resetData} title="Reset to sample data">
+              <button className="btn btn-ghost btn-sm no-label-mobile" onClick={resetData} title="Reset all data">
                 <RotateCcw size={16} /> <span className="btn-label">Reset</span>
               </button>
               <button className="btn btn-ghost btn-icon" onClick={toggleDark} title={dark ? 'Light mode' : 'Dark mode'}>
