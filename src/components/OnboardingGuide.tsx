@@ -35,12 +35,10 @@ const steps = [
 
 export default function OnboardingGuide() {
   const [dismissed, setDismissed] = useState(false)
-  const { clients } = useAppStore()
+  const [step, setStep] = useState(0)
 
   // Auto-dismiss if clients exist and user has content
   if (dismissed || clients.length >= 3) return null
-
-  const [step, setStep] = useState(0)
 
   const st = steps[step]
 
