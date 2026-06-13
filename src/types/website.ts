@@ -182,21 +182,4 @@ export const SITE_TEMPLATES: WebsiteTemplate[] = [
   },
 ]
 
-export function buildSampleSites(): Website[] {
-  return [
-    {
-      id: 'site-1',
-      clientId: '100y22s',
-      name: 'BrightPath Dental',
-      domain: 'brightpath.frantzmarketing.com',
-      published: true,
-      publishedUrl: '/site/site-1',
-      templateId: 'local-service',
-      colorScheme: { primary: '#2563eb', secondary: '#1e40af', accent: '#f59e0b', background: '#ffffff', text: '#1e293b' },
-      fontFamily: 'Inter, sans-serif',
-      pages: JSON.parse(JSON.stringify(SITE_TEMPLATES[0].pages)),
-      seoSettings: { title: 'BrightPath Dental — Expert Dental Care', description: 'Family & cosmetic dentistry serving your community', keywords: 'dentist, dental care, cosmetic dentistry', googleAnalyticsId: '' },
-      createdAt: '2026-04-01', updatedAt: '2026-06-09', lastPublishedAt: '2026-06-09',
-    },
-  ]
-}
+export function buildSampleSites(): Website[] { return [] }
