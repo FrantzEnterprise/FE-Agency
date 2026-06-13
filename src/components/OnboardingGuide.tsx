@@ -34,6 +34,7 @@ const steps = [
 ]
 
 export default function OnboardingGuide() {
+  const clients = useAppStore(s => s.clients)
   const [dismissed, setDismissed] = useState(false)
   const [step, setStep] = useState(0)
 
